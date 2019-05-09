@@ -3,14 +3,14 @@
 	#include "y.tab.h"
 	
 %}
-
+spaces [\t\n \r]
 /*  не хватает строковогго литерала*/
 dquotes_one (\"([^\\\"\n]*(\\\"|\\\n|\\)?)*(\"|[^\\]\n))
 dquotes_two (\"([^\\\"\n]*(\\\"|\\\n|\\)?)*([^\\]\"|[^\\]\n))
 
 string ({dquotes_one}|{dquotes_two})+[\t\n ]*({dquotes_one}|{dquotes_two})*
 
-comment (\/{2,}(.*\\(\n))+.*)|(\/{2,}(.*)(\n))|(\/\*.*\*\/)
+comment (\/{2,}(.*\\(\n))+.*)|(\/{2,}(.*)(\n))|(\/\*(.|{spaces})*\*\/)
 
 %option noyywrap
 %option yylineno
