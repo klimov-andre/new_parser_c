@@ -1,6 +1,40 @@
 %{
 	#include <stdio.h>
+	#include <string.h>
 	#include "y.tab.h"
+	#include <stdlib.h>
+		
+	extern struct typedef_list
+	{
+		char *type_id;
+		struct typedef_list *next;
+	} *g_typedefs;
+	
+	
+	int existstype(char const *xtype)
+	{
+		struct typedef_list *tmp;
+
+		tmp = g_typedefs;
+		while (tmp)
+		{
+		  if (0 == strcmp(xtype, tmp->type_id))
+		  {
+		    return 1;
+		  }
+		  tmp = tmp->next;
+		}
+		return 0;
+	}
+	
+	int get_type(const char* token)
+	{
+		if(existstype(token))
+		{
+			return CUSTOM_TYPE;
+		}
+		return NAME;
+	}
 	
 %}
 
@@ -39,7 +73,6 @@ comment (\/{2,}(.*\\(\n))+.*)|(\/{2,}(.*)(\n))|(\/\*([^*]|\*+[^*/])*\*+\/)
 "long long"     {return(LONG_LONG);}
 "long"			{return(LONG);}
 "register"		{return(REGISTER);}
-"restrict"		{return(RESTRICT);} //в визуалке не работает (vikin eto govno)
 "return"		{return(RETURN);}
 "short"			{return(SHORT);}
 "signed"		{return(SIGNED);}
@@ -91,6 +124,7 @@ comment (\/{2,}(.*\\(\n))+.*)|(\/{2,}(.*)(\n))|(\/\*([^*]|\*+[^*/])*\*+\/)
 "~"				{return('~');}
 "-"				{return('-');}
 "+"				{return('+');}
+"*"{2,}   {return(STARS);}
 "*"				{return('*');}
 "/"				{return('/');}
 "%"				{return('%');}
@@ -100,7 +134,7 @@ comment (\/{2,}(.*\\(\n))+.*)|(\/{2,}(.*)(\n))|(\/\*([^*]|\*+[^*/])*\*+\/)
 "|"				{return('|');}
 "?"				{return('?');}
 
-[_a-zA-Z][_a-zA-Z0-9]*		{return (NAME);}
+[_a-zA-Z][_a-zA-Z0-9]*		{yylval.str = strdup(yytext); return (get_type(strdup(yytext)));}
 [0-9]+						{return (INTEGER);}
 [0-9]*\.[0-9]*				{return (FLOATING);}// очень плохая регулярка
 
@@ -108,3 +142,4 @@ comment (\/{2,}(.*\\(\n))+.*)|(\/{2,}(.*)(\n))|(\/\*([^*]|\*+[^*/])*\*+\/)
 [ \t]+			;
 
 %%
+

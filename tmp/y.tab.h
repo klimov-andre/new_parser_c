@@ -63,11 +63,11 @@ extern int yydebug;
     EXTERN = 273,
     INLINE = 274,
     REGISTER = 275,
-    RESTRICT = 276,
-    STATIC = 277,
-    CONST = 278,
-    VOLATILE = 279,
-    PTR = 280,
+    STATIC = 276,
+    CONST = 277,
+    VOLATILE = 278,
+    PTR = 279,
+    STARS = 280,
     SHIFT_RIGHT_ASSIGN = 281,
     SHIFT_LEFT_ASSIGN = 282,
     SUB_ASSIGN = 283,
@@ -105,7 +105,8 @@ extern int yydebug;
     LE = 315,
     GE = 316,
     EQ = 317,
-    NE = 318
+    NE = 318,
+    CUSTOM_TYPE = 319
   };
 #endif
 /* Tokens.  */
@@ -127,11 +128,11 @@ extern int yydebug;
 #define EXTERN 273
 #define INLINE 274
 #define REGISTER 275
-#define RESTRICT 276
-#define STATIC 277
-#define CONST 278
-#define VOLATILE 279
-#define PTR 280
+#define STATIC 276
+#define CONST 277
+#define VOLATILE 278
+#define PTR 279
+#define STARS 280
 #define SHIFT_RIGHT_ASSIGN 281
 #define SHIFT_LEFT_ASSIGN 282
 #define SUB_ASSIGN 283
@@ -170,10 +171,22 @@ extern int yydebug;
 #define GE 316
 #define EQ 317
 #define NE 318
+#define CUSTOM_TYPE 319
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+
+union YYSTYPE
+{
+#line 61 "src/test.y" /* yacc.c:1909  */
+
+	char *str;
+	int val;
+
+#line 187 "tmp/y.tab.h" /* yacc.c:1909  */
+};
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

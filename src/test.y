@@ -1,30 +1,67 @@
 %{
 	#include <stdio.h>
 	#include <string.h>
-
+	#include <stdlib.h>
+	
 	FILE *yyin;
 	extern int yylineno;
 	int yylex(void);
 	void yyerror(const char *str);
+	
+	struct typedef_list
+	{
+		char *type_id;
+		struct typedef_list *next;
+	} *g_typedefs = NULL;
+
+	struct typedef_list *addtype(char const *newtype)
+	{
+		struct typedef_list *tmp = (struct typedef_list*)malloc(sizeof(struct typedef_list));
+		
+		tmp->type_id = (char*)malloc(strlen(newtype)+1);
+		strcpy(tmp->type_id, newtype);
+		tmp->next = NULL;
+		
+		if (!g_typedefs)
+		{
+		  g_typedefs = tmp;
+		}
+		else
+		{
+		  tmp->next = g_typedefs;
+		  g_typedefs = tmp;
+		}
+	}
+
+
 %}
 
 %token UNSIGNED SIGNED AUTO CHAR LONG INT DOUBLE FLOAT VOID SHORT LONG_LONG
 %token STRUCT UNION ENUM TYPEDEF
-%token EXTERN INLINE REGISTER RESTRICT STATIC CONST VOLATILE
-%token PTR
+%token EXTERN INLINE REGISTER STATIC CONST VOLATILE
+%token PTR STARS
 %token SHIFT_RIGHT_ASSIGN SHIFT_LEFT_ASSIGN SUB_ASSIGN OR_ASSIGN DIV_ASSIGN ADD_ASSIGN MUL_ASSIGN MOD_ASSIGN AND_ASSIGN XOR_ASSIGN
 %token BREAK CONTINUE DEFAULT RETURN GOTO SIZEOF
 %token DO ELSE FOR IF WHILE SWITCH CASE ELSE_IF
 %token INTEGER FLOATING STRING NAME
 %token SHIFT_RIGHT SHIFT_LEFT INC DEC AND OR LE GE EQ NE 
+%token CUSTOM_TYPE
 
 %left ','
 %right  SHIFT_RIGHT_ASSIGN SHIFT_LEFT_ASSIGN SUB_ASSIGN OR_ASSIGN DIV_ASSIGN ADD_ASSIGN MUL_ASSIGN MOD_ASSIGN AND_ASSIGN XOR_ASSIGN
 %left OR AND '|' '^' '&' EQ NE GE LE '>' '<' SHIFT_RIGHT SHIFT_LEFT '+' '-'
 %left '*' '/' INC DEC PTR
 
+%type<str> NAME
+
 %start program
 %define parse.error verbose
+
+%union 
+{
+	char *str;
+	int val;
+};
 
 %%
 
@@ -33,7 +70,7 @@ program:
 	| program definition
 /*	| function*/
 /*	| program function*/
-/*	| typedef */
+	| typedef
 /*  | program typedef */
 	;
 
@@ -42,6 +79,10 @@ definition:
 	| predefinitor definitors ';'
 	;
 
+
+typedef:
+	TYPEDEF type_specifier NAME ';' {addtype($3);printf("%s\n",$3);}
+	;
 
 predefinitor:
 	 global_storage_class_specifier
@@ -58,10 +99,23 @@ definitors:
 	;
 
 definitor:
+	definitor_identificator
+	| definitor_identificator '=' STRING
+	| definitor_identificator '=' expression
+	| definitor_identificator '=' initializer_list
+	;
+
+definitor_identificator:
 	array_or_id
-	| array_or_id '=' STRING
-	| array_or_id '=' expression
-	| array_or_id '=' initializer_list
+	| pointer_id type_qualifier array_or_id
+	| pointer_id array_or_id
+	| pointer_id global_storage_class_specifier
+	;
+
+/* Одна и более звездочек */
+pointer_id:
+	'*'
+	| STARS
 	;
 
 array_or_id:
@@ -121,7 +175,7 @@ global_storage_class_specifier:
 type_specifier:
 	simple_type_specifier
 	| compound_type_specifier
-	| type_specifier '*'
+	| CUSTOM_TYPE
 	;
 	
 /* стр 40 */
@@ -152,7 +206,6 @@ signification:
 type_qualifier:
 	CONST
 	| VOLATILE
-	| RESTRICT /* только для указателей и может нужно убрать*/
 	;
 	
 
@@ -190,7 +243,7 @@ field_type:
 	
 field_ids:
 	/* empty */
-	| array_or_id
+	| definitor_identificator
 	| NAME ':' INTEGER /* <-- битовые поля */
 	| ':' INTEGER /* <-- битовые поля */
 	| field_ids ',' field_ids

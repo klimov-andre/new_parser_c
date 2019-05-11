@@ -1,5 +1,21 @@
 
+/*
+
+	int main = 0;
+name
+\\\\\////
+**//*/
+
+
+
+&@#$#@$EfFsfd
+
+
 //* массивки */
+
+typedef int llllol;
+llllol h = 190;
+
 int a[][1][2][3][4];
 int *a[4][9];
 struct sss
@@ -9,6 +25,20 @@ struct sss
 } arr[99] = 0;
 
 char * test_string = "Compiles - parasha";
+
+int ***a;
+
+const int * a;
+int ** const a;
+
+int  const * const a;
+int * const a;
+const int static * volatile a;
+const int *a;
+int const *a;
+
+//ругается, как и надо
+//int const*;
 
 extern volatile struct a
 {
