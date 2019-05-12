@@ -10,12 +10,26 @@ name
 
 &@#$#@$EfFsfd
 
+*/
+
+// typedef'ы
+typedef volatile struct huy 
+{
+	int a;
+	short po;
+}const * const dd, ll, ****zhopa;
+
+typedef union{
+	struct huy raz;
+	zhopa dva;
+	int tri;
+} testdef, *ptestdef;
+
+dd h = 190;
+ll pipka, oikq;
+zhopa oooo;
 
 //* массивки */
-
-typedef int llllol;
-llllol h = 190;
-
 int a[][1][2][3][4];
 int *a[4][9];
 struct sss

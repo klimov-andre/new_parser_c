@@ -7,7 +7,7 @@
 	extern int yylineno;
 	int yylex(void);
 	void yyerror(const char *str);
-	
+	int typedef volatile pluh;
 	struct typedef_list
 	{
 		char *type_id;
@@ -33,7 +33,6 @@
 		}
 	}
 
-
 %}
 
 %token UNSIGNED SIGNED AUTO CHAR LONG INT DOUBLE FLOAT VOID SHORT LONG_LONG
@@ -52,7 +51,7 @@
 %left OR AND '|' '^' '&' EQ NE GE LE '>' '<' SHIFT_RIGHT SHIFT_LEFT '+' '-'
 %left '*' '/' INC DEC PTR
 
-%type<str> NAME
+%type<str> NAME typedef_newtype
 
 %start program
 %define parse.error verbose
@@ -71,7 +70,7 @@ program:
 /*	| function*/
 /*	| program function*/
 	| typedef
-/*  | program typedef */
+  | program typedef
 	;
 
 definition:
@@ -79,9 +78,34 @@ definition:
 	| predefinitor definitors ';'
 	;
 
-
+// Должно работать еще и как 	typedef_oldtype TYPEDEF typedef_newtypes ';', но 32 конфликта - оч много, поэтому только так
 typedef:
-	TYPEDEF type_specifier NAME ';' {addtype($3);printf("%s\n",$3);}
+	TYPEDEF typedef_oldtype typedef_newtypes ';' 
+	;
+
+typedef_oldtype:
+	specifier
+	;
+	
+specifier:
+	type_specifier
+	| type_qualifier
+	| specifier type_qualifier
+	| specifier type_specifier
+	;
+	
+typedef_newtypes:
+	typedef_newtype {addtype($1); printf("%s\n",$1);}
+	| typedef_newtypes ',' typedef_newtype {addtype($3); printf("%s\n",$3);}
+	| typedef_newtypes ',' type_qualifier typedef_newtype {addtype($4); printf("%s\n",$4);}
+	;
+	
+
+typedef_newtype:
+	NAME {$$ = $1;}
+	| pointer_id type_qualifier NAME {$$ = $3;}
+	| NAME  type_qualifier {$$ = $1;}
+	| pointer_id typedef_newtype {$$ = $2;}
 	;
 
 predefinitor:
