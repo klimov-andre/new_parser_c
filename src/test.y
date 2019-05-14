@@ -64,6 +64,9 @@
 
 %%
 
+
+/* ----- Грамматика всей программы ----- */
+
 program:
 	definition
 	| program definition
@@ -73,6 +76,8 @@ program:
 	| program typedef
 	;
 
+/* ----- Грамматика объявлений ----- */
+	
 definition:
 	predefinitor ';'
 	| predefinitor definitors ';'
@@ -95,9 +100,9 @@ specifier:
 	;
 	
 typedef_newtypes:
-	typedef_newtype {addtype($1); printf("%s\n",$1);}
-	| typedef_newtypes ',' typedef_newtype {addtype($3); printf("%s\n",$3);}
-	| typedef_newtypes ',' type_qualifier typedef_newtype {addtype($4); printf("%s\n",$4);}
+	typedef_newtype {addtype($1); /*printf("%s\n",$1);*/}
+	| typedef_newtypes ',' typedef_newtype {addtype($3); /*printf("%s\n",$3);*/}
+	| typedef_newtypes ',' type_qualifier typedef_newtype {addtype($4); /*printf("%s\n",$4);*/}
 	;
 	
 
@@ -163,7 +168,6 @@ int_dimension:
 	| int_dimension '[' INTEGER ']'
 	;
 
-
 /*  не хватает строкового литерала */
 basic_unit:
 	NAME
@@ -181,147 +185,6 @@ initializers:
 	| initializers ',' basic_unit
 	| initializers ',' initializer_list
 	| initializer_list
-	;
-
-/* пока что так, в дальнейшем дополнить по полной */
-/* expression:
-	INTEGER
-	| FLOATING
-	; */
-	
-primary_expression: 
-	STRING
-	| NAME
-	| INTEGER
-	| FLOATING
-	| '(' expression ')'
-	;
-
-postfix_expression:
-	primary_expression
-	| postfix_expression '[' expression ']'
-	| postfix_expression '(' ')'
-	| postfix_expression '(' argument_expression_list ')'
-	| postfix_expression '.' NAME
-	| postfix_expression PTR NAME
-	| postfix_expression INC
-	| postfix_expression DEC
-	;
-
-argument_expression_list:
-	assignment_expression
-	| argument_expression_list ',' assignment_expression
-	;
-
-unary_expression:
-	postfix_expression
-	| INC unary_expression
-	| DEC unary_expression
-	| unary_operator cast_expression
-	| SIZEOF unary_expression
-	| SIZEOF '(' type_specifier ')'
-	;
-
-unary_operator:
-	'&'
-	| '*'
-	| '+'
-	| '-'
-	| '~'
-	| '!'
-	;
-
-cast_expression:
-	unary_expression
-	| '(' type_specifier ')' cast_expression 
-	| '(' type_specifier pointer_id')' cast_expression
-	;
-
-multiplicative_expression:
-	cast_expression
-	| multiplicative_expression '*' cast_expression
-	| multiplicative_expression '/' cast_expression
-	| multiplicative_expression '%' cast_expression
-	;
-
-additive_expression:
-	multiplicative_expression
-	| additive_expression '+' multiplicative_expression
-	| additive_expression '-' multiplicative_expression
-	;
-
-shift_expression:
-	additive_expression
-	| shift_expression SHIFT_LEFT additive_expression
-	| shift_expression SHIFT_RIGHT additive_expression
-	;
-
-relational_expression:
-	shift_expression
-	| relational_expression '<' shift_expression
-	| relational_expression '>' shift_expression
-	| relational_expression LE shift_expression
-	| relational_expression GE shift_expression
-	;
-
-equality_expression:
-	relational_expression
-	| equality_expression EQ relational_expression
-	| equality_expression NE relational_expression
-	;
-
-and_expression:
-	equality_expression
-	| and_expression '&' equality_expression
-	;
-
-exclusive_or_expression:
-	and_expression
-	| exclusive_or_expression '^' and_expression
-	;
-
-inclusive_or_expression:
-	exclusive_or_expression
-	| inclusive_or_expression '|' exclusive_or_expression
-	;
-
-logical_and_expression:
-	inclusive_or_expression
-	| logical_and_expression AND inclusive_or_expression
-	;
-
-logical_or_expression:
-	logical_and_expression
-	| logical_or_expression OR logical_and_expression
-	;
-
-conditional_expression:
-	logical_or_expression
-	| logical_or_expression '?' expression ':' conditional_expression
-	;
-
-assignment_expression:
-	conditional_expression
-	| unary_expression assignment_operator assignment_expression
-	;
-
-assignment_operator:
-	'='
-	| MUL_ASSIGN
-	| DIV_ASSIGN
-	| MOD_ASSIGN
-	| ADD_ASSIGN
-	| SUB_ASSIGN
-	| SHIFT_LEFT_ASSIGN
-	| SHIFT_RIGHT_ASSIGN
-	| AND_ASSIGN
-	| XOR_ASSIGN
-	| OR_ASSIGN
-	;
-
-expression:
-	assignment_expression
-	| expression ',' assignment_expression
 	;
 	
 /* с этим вопросы: глобально доступны только - 2, локально - 4, для функций толлько - 2 */
@@ -419,7 +282,6 @@ union_fields:
 	structure_fields
 	;
 
-
 /* стр 57*/
 enumeration:
 	ENUM NAME
@@ -438,53 +300,46 @@ enum_identifier:
 	| enum_identifier ','
 	;
 	
+/* ----- Операторы ----- */
+	
 statement:
-	labeled_statement
-	| compound_statement
+	label
 	| expression_statement
-	| selection_statement
-	| iteration_statement
+	| conditional_statement
+	| loop_statement
 	| jump_statement
+	| '{' statement_list '}'
+	;
+	
+// Набор операторов
+statement_list:
+	statement 
+	| definition 
+	| statement_list statement 
+	| statement_list definition
 	;
 
-labeled_statement:
+// Метки
+label:
 	NAME ':' statement
 	| CASE conditional_expression ':' statement
 	| DEFAULT ':' statement
 	;
 
-compound_statement:
-	'{' body '}'
-	| '{' '}'
-/*	| '{' statement_list '}'
-	| '{' declaration_list '}'
-	| '{' declaration_list statement_list '}'*/
-	;
-	
-body:
-	statement | definition | body statement | body definition;
-
+// Выражения
 expression_statement:
 	';'
 	| expression ';'
 	;
-
-selection_statement:
+	
+// Условные операторы
+conditional_statement:
 	IF '(' expression ')' statement
 	| IF '(' expression ')' statement ELSE statement
 	| SWITCH '(' expression ')' statement
 	;
 	
-expression_for_loop:
-	predefinitor definitor | expression ;
-
-iteration_statement:
-	WHILE '(' expression ')' statement
-	| DO statement WHILE '(' expression ')' ';'
-	| FOR '(' expression_for_loop ';' expression_for_loop ')' statement
-	| FOR '(' expression_for_loop ';' expression_for_loop ';' expression ')' statement
-	;
-
+// Переходы
 jump_statement:
 	GOTO NAME ';'
 	| CONTINUE ';'
@@ -493,20 +348,175 @@ jump_statement:
 	| RETURN expression ';'
 	;
 	
-function:
-	predefinitor func_id '(' args ')' compound_statement
-	| predefinitor func_id '(' ')' compound_statement;
+// Циклы
+loop_statement:
+	WHILE '(' expression ')' statement
+	| DO statement WHILE '(' expression ')' ';'
+	| FOR '(' expression_for_loop ';' expression_for_loop ')' statement
+	| FOR '(' expression_for_loop ';' expression_for_loop ';' expression ')' statement
+	;
 	
-args:
-	predefinitor definitor
-	| args ',' predefinitor definitor;
+// Выражения для циклов
+expression_for_loop:
+	predefinitor definitor /* объявление переменной может быть прямо в скобочках */
+	| expression /* либо сразу выражение */
+	;
 
+/* ----- Грамматика функций ----- */	
+
+function:
+	predefinitor func_id '(' arguments ')' '{' statement_list '}'
+	| predefinitor func_id '(' ')' '{' statement_list '}';
+	
+// Грамматика имен функций
 func_id:
 	NAME
 	| pointer_id NAME;
 	
-/*func_prototype:
-	;*/
+/* ----- Грамматика выражений ----- */
+
+// Выражения могут быть перечислены в строчку через запятую
+expression:
+	assignment_expression
+	| expression ',' assignment_expression
+	;
+
+// Присваивания в выражении
+assignment_expression:
+	conditional_expression /* Если нет знака присваивания, то это может быть условие */
+	| prefix_expression assignment_operator assignment_expression
+	;
+
+// Сложные условные выражения (да да, те самые (ебланские) конструкции типа Условие ? Выражение1 : Выражение2; )
+conditional_expression:
+	logical_expression
+	| logical_expression '?' expression ':' conditional_expression
+	;
+
+// Логические выражения (выражения с логическими операторами)
+logical_expression:
+	compare_expression
+	| logical_expression logical_operator compare_expression
+	;
+
+// Простые условные выражения (только со знаками сравнения)
+compare_expression:
+	shift_expression
+	| compare_expression compare_operator shift_expression
+	;
+	
+// Выражения со сдвигами
+shift_expression:
+	simple_expression
+	| shift_expression SHIFT_LEFT simple_expression
+	| shift_expression SHIFT_RIGHT simple_expression
+	;
+	
+// Самые простые выражения (там где обычные арифметические операции)
+simple_expression:
+	cast
+	| simple_expression calc_operator cast
+	;
+	
+// Приведение типов (тоже может быть внутри выражений)
+cast:
+	prefix_expression
+	| '(' type_specifier ')' cast 
+	| '(' type_specifier pointer_id')' cast
+	;
+	
+// Конечные члены выражения	
+primary_expression: 
+	STRING
+	| NAME
+	| INTEGER
+	| FLOATING
+	| '(' expression ')'
+	;
+	
+// Унарные выражения (чтоб можно было перед выражениями всякие штуки писать
+// типа ++, --, а еще приведение типов) Здесь же и sizeof
+prefix_expression:
+	postfix_expression
+	| INC prefix_expression
+	| DEC prefix_expression
+	| unary_operator cast
+	| SIZEOF prefix_expression
+	| SIZEOF '(' type_specifier ')'
+	;
+
+// Те же унарные выражения, только уже после основных выражений
+postfix_expression:
+	primary_expression
+	| postfix_expression '[' expression ']'
+	| postfix_expression '(' ')'
+	| postfix_expression '(' arguments_without_type ')'
+	| postfix_expression '.' NAME
+	| postfix_expression PTR NAME
+	| postfix_expression INC
+	| postfix_expression DEC
+	;
+	
+/* ----- Описание аргументов ----- */
+
+arguments:
+	predefinitor definitor
+	| arguments ',' predefinitor definitor;
+	
+arguments_without_type:
+	assignment_expression
+	| arguments_without_type ',' assignment_expression
+	;
+	
+/* ----- Всякие разные операторы ----- */
+
+assignment_operator:
+	'='
+	| MUL_ASSIGN
+	| DIV_ASSIGN
+	| MOD_ASSIGN
+	| ADD_ASSIGN
+	| SUB_ASSIGN
+	| SHIFT_LEFT_ASSIGN
+	| SHIFT_RIGHT_ASSIGN
+	| AND_ASSIGN
+	| XOR_ASSIGN
+	| OR_ASSIGN
+	;
+	
+unary_operator:
+	'&'
+	| '*'
+	| '+'
+	| '-'
+	| '~'
+	| '!'
+	;
+
+calc_operator:
+	'+'
+	| '-'
+	| '*'
+	| '/'
+	| '%'
+	;
+	
+compare_operator:
+	'<'
+	| '>'
+	| LE
+	| GE
+	| EQ
+	| NE
+	;
+	
+logical_operator:
+	'&'
+	| '|'
+	| '^' 
+	| AND
+	| OR
+	;
 %%
 
 void yyerror(const char *str)
