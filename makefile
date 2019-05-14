@@ -2,11 +2,13 @@ FNAME = test
 SOURCES = src
 TEMPORARY = tmp
 BUILD = run
+TEST_DIR = test
+TEST_FNAME = test
 
 lex:
 	lex -o $(TEMPORARY)/lex.yy.c $(SOURCES)/$(FNAME).l
 	
-yacc:
+yacc: $(SOURCES)/$(FNAME).y
 	yacc -dt  $(SOURCES)/$(FNAME).y -o $(TEMPORARY)/y.tab.c
 
 clean: 
@@ -22,3 +24,6 @@ all:
 	make lex yacc build
 
 rebuild: clean all
+
+mtest:
+	./$(BUILD)/$(FNAME) ./$(TEST_DIR)/$(TEST_FNAME).c
