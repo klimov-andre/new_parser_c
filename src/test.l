@@ -3,7 +3,7 @@
 	#include <string.h>
 	#include "y.tab.h"
 	#include <stdlib.h>
-		
+	
 	extern struct typedef_list
 	{
 		char *type_id;

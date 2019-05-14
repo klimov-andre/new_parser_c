@@ -91,22 +91,21 @@ extern int yydebug;
     WHILE = 301,
     SWITCH = 302,
     CASE = 303,
-    ELSE_IF = 304,
-    INTEGER = 305,
-    FLOATING = 306,
-    STRING = 307,
-    NAME = 308,
-    SHIFT_RIGHT = 309,
-    SHIFT_LEFT = 310,
-    INC = 311,
-    DEC = 312,
-    AND = 313,
-    OR = 314,
-    LE = 315,
-    GE = 316,
-    EQ = 317,
-    NE = 318,
-    CUSTOM_TYPE = 319
+    INTEGER = 304,
+    FLOATING = 305,
+    STRING = 306,
+    NAME = 307,
+    SHIFT_RIGHT = 308,
+    SHIFT_LEFT = 309,
+    INC = 310,
+    DEC = 311,
+    AND = 312,
+    OR = 313,
+    LE = 314,
+    GE = 315,
+    EQ = 316,
+    NE = 317,
+    CUSTOM_TYPE = 318
   };
 #endif
 /* Tokens.  */
@@ -156,34 +155,33 @@ extern int yydebug;
 #define WHILE 301
 #define SWITCH 302
 #define CASE 303
-#define ELSE_IF 304
-#define INTEGER 305
-#define FLOATING 306
-#define STRING 307
-#define NAME 308
-#define SHIFT_RIGHT 309
-#define SHIFT_LEFT 310
-#define INC 311
-#define DEC 312
-#define AND 313
-#define OR 314
-#define LE 315
-#define GE 316
-#define EQ 317
-#define NE 318
-#define CUSTOM_TYPE 319
+#define INTEGER 304
+#define FLOATING 305
+#define STRING 306
+#define NAME 307
+#define SHIFT_RIGHT 308
+#define SHIFT_LEFT 309
+#define INC 310
+#define DEC 311
+#define AND 312
+#define OR 313
+#define LE 314
+#define GE 315
+#define EQ 316
+#define NE 317
+#define CUSTOM_TYPE 318
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 60 "src/test.y" /* yacc.c:1909  */
+#line 364 "src/test.y" /* yacc.c:1909  */
 
 	char *str;
 	int val;
 
-#line 187 "tmp/y.tab.h" /* yacc.c:1909  */
+#line 185 "tmp/y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
