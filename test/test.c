@@ -128,4 +128,31 @@ volatile union test_union
 	} a;
 };
 
+unsigned long long x = a*b;
+int char x;
+int* main (
+int argc, 
+int argv)
+{
+	int a = b+123/4124;
+
+	int x = sum("efjwnef", d);
+	if (a > b)
+		return a;
+	else
+	{
+		hello(" hello", b);
+		b = a++;
+		return b;
+	}
+	
+	do
+		{
+			i++;
+		} while (1);
+		int x = a*b;
+		
+	int **rows = (int**)malloc(sizeof(int)*height * 2 + 1);
+
+}
 
