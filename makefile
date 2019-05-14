@@ -3,7 +3,10 @@ SOURCES = src
 TEMPORARY = tmp
 BUILD = run
 TEST_DIR = test
-TEST_FNAME = test
+TEST_FNAME_1 = test.c
+TEST_FNAME_2 = labirint.c
+TEST_FNAME_3 = bd.c
+
 
 lex:
 	lex -o $(TEMPORARY)/lex.yy.c $(SOURCES)/$(FNAME).l
@@ -26,4 +29,6 @@ all:
 rebuild: clean all
 
 mtest:
-	./$(BUILD)/$(FNAME) ./$(TEST_DIR)/$(TEST_FNAME).c
+	./$(BUILD)/$(FNAME) ./$(TEST_DIR)/$(TEST_FNAME_1)
+	./$(BUILD)/$(FNAME) ./$(TEST_DIR)/$(TEST_FNAME_2)
+	./$(BUILD)/$(FNAME) ./$(TEST_DIR)/$(TEST_FNAME_3)
