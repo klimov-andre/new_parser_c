@@ -41,7 +41,7 @@
 %token PTR STARS
 %token SHIFT_RIGHT_ASSIGN SHIFT_LEFT_ASSIGN SUB_ASSIGN OR_ASSIGN DIV_ASSIGN ADD_ASSIGN MUL_ASSIGN MOD_ASSIGN AND_ASSIGN XOR_ASSIGN
 %token BREAK CONTINUE DEFAULT RETURN GOTO SIZEOF
-%token DO ELSE FOR IF WHILE SWITCH CASE ELSE_IF
+%token DO ELSE FOR IF WHILE SWITCH CASE 
 %token INTEGER FLOATING STRING NAME
 %token SHIFT_RIGHT SHIFT_LEFT INC DEC AND OR LE GE EQ NE 
 %token CUSTOM_TYPE
@@ -67,10 +67,10 @@
 program:
 	definition
 	| program definition
-/*	| function*/
-/*	| program function*/
+	| function
+	| program function
 	| typedef
-  | program typedef
+	| program typedef
 	;
 
 definition:
@@ -124,7 +124,6 @@ definitors:
 
 definitor:
 	definitor_identificator
-	| definitor_identificator '=' STRING
 	| definitor_identificator '=' expression
 	| definitor_identificator '=' initializer_list
 	;
@@ -185,11 +184,146 @@ initializers:
 	;
 
 /* пока что так, в дальнейшем дополнить по полной */
-expression:
+/* expression:
 	INTEGER
 	| FLOATING
+	; */
+	
+primary_expression: 
+	STRING
+	| NAME
+	| INTEGER
+	| FLOATING
+	| '(' expression ')'
 	;
 
+postfix_expression:
+	primary_expression
+	| postfix_expression '[' expression ']'
+	| postfix_expression '(' ')'
+	| postfix_expression '(' argument_expression_list ')'
+	| postfix_expression '.' NAME
+	| postfix_expression PTR NAME
+	| postfix_expression INC
+	| postfix_expression DEC
+	;
+
+argument_expression_list:
+	assignment_expression
+	| argument_expression_list ',' assignment_expression
+	;
+
+unary_expression:
+	postfix_expression
+	| INC unary_expression
+	| DEC unary_expression
+	| unary_operator cast_expression
+	| SIZEOF unary_expression
+	| SIZEOF '(' type_specifier ')'
+	;
+
+unary_operator:
+	'&'
+	| '*'
+	| '+'
+	| '-'
+	| '~'
+	| '!'
+	;
+
+cast_expression:
+	unary_expression
+	| '(' type_specifier ')' cast_expression 
+	| '(' type_specifier pointer_id')' cast_expression
+	;
+
+multiplicative_expression:
+	cast_expression
+	| multiplicative_expression '*' cast_expression
+	| multiplicative_expression '/' cast_expression
+	| multiplicative_expression '%' cast_expression
+	;
+
+additive_expression:
+	multiplicative_expression
+	| additive_expression '+' multiplicative_expression
+	| additive_expression '-' multiplicative_expression
+	;
+
+shift_expression:
+	additive_expression
+	| shift_expression SHIFT_LEFT additive_expression
+	| shift_expression SHIFT_RIGHT additive_expression
+	;
+
+relational_expression:
+	shift_expression
+	| relational_expression '<' shift_expression
+	| relational_expression '>' shift_expression
+	| relational_expression LE shift_expression
+	| relational_expression GE shift_expression
+	;
+
+equality_expression:
+	relational_expression
+	| equality_expression EQ relational_expression
+	| equality_expression NE relational_expression
+	;
+
+and_expression:
+	equality_expression
+	| and_expression '&' equality_expression
+	;
+
+exclusive_or_expression:
+	and_expression
+	| exclusive_or_expression '^' and_expression
+	;
+
+inclusive_or_expression:
+	exclusive_or_expression
+	| inclusive_or_expression '|' exclusive_or_expression
+	;
+
+logical_and_expression:
+	inclusive_or_expression
+	| logical_and_expression AND inclusive_or_expression
+	;
+
+logical_or_expression:
+	logical_and_expression
+	| logical_or_expression OR logical_and_expression
+	;
+
+conditional_expression:
+	logical_or_expression
+	| logical_or_expression '?' expression ':' conditional_expression
+	;
+
+assignment_expression:
+	conditional_expression
+	| unary_expression assignment_operator assignment_expression
+	;
+
+assignment_operator:
+	'='
+	| MUL_ASSIGN
+	| DIV_ASSIGN
+	| MOD_ASSIGN
+	| ADD_ASSIGN
+	| SUB_ASSIGN
+	| SHIFT_LEFT_ASSIGN
+	| SHIFT_RIGHT_ASSIGN
+	| AND_ASSIGN
+	| XOR_ASSIGN
+	| OR_ASSIGN
+	;
+
+expression:
+	assignment_expression
+	| expression ',' assignment_expression
+	;
+	
 /* с этим вопросы: глобально доступны только - 2, локально - 4, для функций толлько - 2 */
 global_storage_class_specifier:
 	EXTERN | STATIC
@@ -303,9 +437,76 @@ enum_identifier:
 	| NAME '=' INTEGER
 	| enum_identifier ','
 	;
+	
+statement:
+	labeled_statement
+	| compound_statement
+	| expression_statement
+	| selection_statement
+	| iteration_statement
+	| jump_statement
+	;
 
+labeled_statement:
+	NAME ':' statement
+	| CASE conditional_expression ':' statement
+	| DEFAULT ':' statement
+	;
 
+compound_statement:
+	'{' body '}'
+	| '{' '}'
+/*	| '{' statement_list '}'
+	| '{' declaration_list '}'
+	| '{' declaration_list statement_list '}'*/
+	;
+	
+body:
+	statement | definition | body statement | body definition;
 
+expression_statement:
+	';'
+	| expression ';'
+	;
+
+selection_statement:
+	IF '(' expression ')' statement
+	| IF '(' expression ')' statement ELSE statement
+	| SWITCH '(' expression ')' statement
+	;
+	
+expression_for_loop:
+	predefinitor definitor | expression ;
+
+iteration_statement:
+	WHILE '(' expression ')' statement
+	| DO statement WHILE '(' expression ')' ';'
+	| FOR '(' expression_for_loop ';' expression_for_loop ')' statement
+	| FOR '(' expression_for_loop ';' expression_for_loop ';' expression ')' statement
+	;
+
+jump_statement:
+	GOTO NAME ';'
+	| CONTINUE ';'
+	| BREAK ';'
+	| RETURN ';'
+	| RETURN expression ';'
+	;
+	
+function:
+	predefinitor func_id '(' args ')' compound_statement
+	| predefinitor func_id '(' ')' compound_statement;
+	
+args:
+	predefinitor definitor
+	| args ',' predefinitor definitor;
+
+func_id:
+	NAME
+	| pointer_id NAME;
+	
+/*func_prototype:
+	;*/
 %%
 
 void yyerror(const char *str)

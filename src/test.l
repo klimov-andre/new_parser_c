@@ -60,7 +60,6 @@ comment (\/{2,}(.*\\(\n))+.*)|(\/{2,}(.*)(\n))|(\/\*([^*]|\*+[^*/])*\*+\/)
 "default"		{return(DEFAULT);}
 "do"			{return(DO);}
 "double"		{return(DOUBLE);}
-"else if"		{return(ELSE_IF);}
 "else"			{return(ELSE);}
 "enum"			{return(ENUM);}
 "extern"		{return(EXTERN);}
