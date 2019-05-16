@@ -1,4 +1,4 @@
-
+int int huy;
 /*
 
 	int main = 0;
@@ -19,8 +19,10 @@ typedef volatile struct huy
 	short po;
 }const * const dd, ll, ****zhopa;
 
-typedef union{
-	struct huy raz;
+
+
+typedef  union{
+	struct huy zhopa  raz;
 	zhopa dva;
 	int tri;
 } testdef, *ptestdef;
@@ -47,7 +49,7 @@ int ** const a;
 
 int  const * const a;
 int * const a;
-const int static * volatile a;
+const int extern static * volatile a;
 const int *a;
 int const *a;
 
@@ -68,7 +70,7 @@ struct adasdsadsad
 	
 	int bitfield : 10;
 	int bitf : 1, bb1, :2, bb2 : 2;
-	
+	auto poopol;
 	struct j
 	{
 		int aa;
@@ -76,8 +78,10 @@ struct adasdsadsad
   /*тип поля*/
 };
 
+int const char * const  peremennaya;
 
-static unsigned long long int a;
+long long short int _var = 199;
+static unsigned long long int extern  a;
 
 
 // просто какая-то параша \
@@ -129,13 +133,13 @@ volatile union test_union
 };
 
 unsigned long long x = a*b;
-int char x;
-int* main (
-int argc, 
-int argv)
+//int char x;
+long* main (
+register int argc, 
+int static argv)
 {
 	int a = b+123/4124;
-
+	auto poopol;
 	int x = sum("efjwnef", d);
 	if (a > b)
 		return a;
@@ -145,14 +149,14 @@ int argv)
 		b = a++;
 		return b;
 	}
-	
+	char void * p = (void char *)malloc(sizeof(int)*height * 2 + 1);
 	do
 		{
 			i++;
 		} while (1);
 		int x = a*b;
 		
-	int **rows = (int**)malloc(sizeof(int)*height * 2 + 1);
+	int **rows = (const int **)malloc(sizeof(int)*height * 2 + 1);
 
 }
 

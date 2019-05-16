@@ -32,7 +32,311 @@
 		  g_typedefs = tmp;
 		}
 	}
-
+	
+	typedef enum _SpecificationType
+	{
+		SpecificationTypeStorageDenied,
+		SpecificationTypeGlobal,
+		SpecificationTypeArgument,
+		SpecificationTypeNone,
+		SpecificationTypePrev
+	}SpecificationType;
+	
+	typedef enum _TypeBasic
+	{
+		TypeBasicInt,
+		TypeBasicVoid,
+		TypeBasicDouble,
+		TypeBasicFloat,
+		TypeBasicChar,
+		TypeBasicCompound,
+		TypeBasicNone
+	}TypeBasic;
+	
+	typedef enum _TypeAdditional
+	{
+		TypeAdditionalLongLong,
+		TypeAdditionalLong,
+		TypeAdditionalShort,
+		TypeAdditionalNone
+	}TypeAdditional;
+		
+	typedef enum _TypeSign
+	{
+		TypeSignSigned,
+		TypeSignUnsigned,
+		TypeSignNone
+	}TypeSign;
+	
+	typedef enum _TypeStorage
+	{
+		TypeStorageAuto,
+		TypeStorageExtern,
+		TypeStorageRegister,
+		TypeStorageStatic,
+		TypeStorageNone,
+	}TypeStorage;
+	
+	struct _technical_variables
+	{
+		TypeBasic type_basic;
+		TypeAdditional type_additional;
+		TypeSign type_sign;
+		TypeStorage type_storage;
+		SpecificationType specification_type;
+		SpecificationType prev_storage;
+		unsigned int auto_cntr, extern_cntr, register_cntr, static_cntr;
+	} technical_variables;
+	
+	void set_specification(SpecificationType specification_type)
+	{
+		//printf("	%d specification: %d %d %d\n", yylineno, technical_variables.prev_storage, technical_variables.specification_type, specification_type);
+		if(specification_type == SpecificationTypePrev)
+		{
+			//SpecificationType tmp=technical_variables.prev_storage;
+			//technical_variables.prev_storage = technical_variables.specification_type;
+			technical_variables.specification_type = technical_variables.prev_storage;
+			return;
+		}
+		technical_variables.prev_storage = technical_variables.specification_type;
+		technical_variables.specification_type = specification_type;
+	}
+	
+	void technical_variables_clean_all()
+	{
+		technical_variables.type_basic = TypeBasicNone;
+		technical_variables.type_additional = TypeAdditionalNone;
+		technical_variables.type_sign = TypeSignNone;
+		technical_variables.type_storage = TypeStorageNone;
+	}
+	
+	//#define DGB_PRINT printf("%s %d\n", __FUNCTION__, __LINE__);
+	#define DGB_PRINT
+	// сначала может быть объявлен доп тип, потом базовый. чекнуть
+	void set_type_basic(TypeBasic new_type_basic)
+	{
+		if(technical_variables.type_basic != TypeBasicNone )
+		{
+			
+			yyerror("More than one type specified");
+			//YYACCEPT;
+			return;
+		}
+		
+		if(technical_variables.type_sign != TypeSignNone &&
+			(new_type_basic != TypeBasicInt && new_type_basic != TypeBasicChar && new_type_basic != TypeBasicNone)
+			)
+		{
+			
+			yyerror("More than one type specified");
+			//YYACCEPT;
+			return;
+		}
+		
+		switch(technical_variables.type_additional)
+		{
+			case TypeAdditionalNone:
+				technical_variables.type_basic = new_type_basic;
+				return;
+			break;
+			
+			case TypeAdditionalShort:
+				if(technical_variables.type_basic != TypeBasicInt && 
+					technical_variables.type_basic != TypeBasicFloat &&
+					technical_variables.type_basic != TypeBasicDouble &&
+					technical_variables.type_basic != TypeBasicNone
+				)
+				{
+					
+					yyerror("More than one type specified");
+					//YYACCEPT;
+					return;
+				}
+				
+				technical_variables.type_basic = new_type_basic;
+				return;
+			break;
+			
+			case TypeAdditionalLongLong:
+				if(technical_variables.type_basic != TypeBasicInt && 
+					technical_variables.type_basic != TypeBasicDouble &&
+					technical_variables.type_basic != TypeBasicNone 
+				)
+				{
+					
+					yyerror("More than one type specified");
+					//YYACCEPT;
+					return;
+				}
+				
+				technical_variables.type_basic = new_type_basic;
+				return;
+			break;
+			
+			case TypeAdditionalLong:
+				if(technical_variables.type_basic != TypeBasicInt && 
+					technical_variables.type_basic != TypeBasicFloat &&
+					technical_variables.type_basic != TypeBasicDouble &&
+					technical_variables.type_basic != TypeBasicNone
+				)
+				{
+					
+					yyerror("More than one type specified");
+					//YYACCEPT;
+					return;
+				}
+				
+				technical_variables.type_basic = new_type_basic;
+				return;
+			break;
+		}
+			
+	}
+	
+	void set_type_additional(TypeAdditional new_type_additional)
+	{
+		if(technical_variables.type_additional != TypeAdditionalNone)
+		{
+			
+			yyerror("Incorrect combination of specificators");
+			//YYACCEPT;
+			return;
+		}
+		else if(technical_variables.type_basic != TypeBasicInt && 
+				technical_variables.type_basic != TypeBasicFloat &&
+				technical_variables.type_basic != TypeBasicDouble &&
+				technical_variables.type_basic != TypeBasicNone)
+		{
+			
+			printf("%d\n", TypeBasicNone);
+			yyerror("Incorrect combination of specificators");
+			//YYACCEPT;
+			return;
+		}
+		
+		switch(technical_variables.type_basic)
+		{
+			case TypeBasicInt:
+				technical_variables.type_additional = new_type_additional;
+				return;
+			break;
+			
+			case TypeBasicFloat:
+				if(new_type_additional != TypeAdditionalLong)
+				{
+					
+					yyerror("Incorrect combination of specificators");
+					//YYACCEPT;
+					return;
+				}
+				technical_variables.type_additional = new_type_additional;
+				return;
+			break;
+			
+			case TypeBasicDouble:
+				if(new_type_additional != TypeAdditionalLong &&
+					new_type_additional != TypeAdditionalLongLong
+					)
+				{
+					
+					yyerror("Incorrect combination of specificators");
+					//YYACCEPT;
+					return;
+				}
+				technical_variables.type_additional = new_type_additional;
+				return;
+			break;
+			
+			case TypeBasicNone:
+				technical_variables.type_additional = new_type_additional;
+				return;
+			break;
+		}
+		
+	}
+	
+	void set_type_sign(TypeSign new_type_sign)
+	{
+		if(technical_variables.type_sign == new_type_sign)
+		{
+			return;
+		}
+		else if(technical_variables.type_sign != TypeSignNone)
+		{
+			
+			yyerror("Incorrect combination of specificators");
+			//YYACCEPT;
+			return;
+		}
+		
+		if (technical_variables.type_basic != TypeBasicInt && 
+			technical_variables.type_basic != TypeBasicChar &&
+			technical_variables.type_basic != TypeBasicNone)
+		{
+		
+			yyerror("Incorrect combination of specificators");
+			//YYACCEPT;
+			return;
+		}
+		else
+		{
+			technical_variables.type_sign = new_type_sign;
+			return;
+		}
+	}
+	
+	void set_type_storage(TypeStorage new_type_storage)
+	{
+		SpecificationType specification_type = technical_variables.specification_type;
+		
+		if(technical_variables.type_storage != TypeStorageNone)
+		{
+			
+			yyerror("More than one storage class specified");
+			//YYACCEPT;
+			return;
+		}
+		switch(specification_type)
+		{
+			case SpecificationTypeArgument:
+				if(new_type_storage != TypeStorageRegister)
+				{
+					
+					yyerror("Incorrect storage class specified");
+					//YYACCEPT;
+					return;
+				}
+				technical_variables.type_storage = new_type_storage;
+				return;
+			break;
+			
+			case SpecificationTypeGlobal:
+				if(new_type_storage != TypeStorageStatic &&
+					new_type_storage != TypeStorageExtern)
+				{
+					
+					yyerror("Incorrect storage class specified");
+					//YYACCEPT;
+					return;
+				}
+				technical_variables.type_storage = new_type_storage;
+				return;
+			break;
+			
+			case SpecificationTypeStorageDenied:
+				
+				yyerror("Storage class denied in this construction");
+				//YYACCEPT;
+				return;
+			break;
+			
+			case SpecificationTypeNone:
+				technical_variables.type_storage = new_type_storage;
+				return;
+			break;
+		}
+	}
+	
 %}
 
 %token UNSIGNED SIGNED AUTO CHAR LONG INT DOUBLE FLOAT VOID SHORT LONG_LONG
@@ -68,12 +372,12 @@
 /* ----- Грамматика всей программы ----- */
 
 program:
-	definition
-	| program definition
+	definition {technical_variables_clean_all();}
+	| program definition {technical_variables_clean_all();}
 	| function
 	| program function
-	| typedef
-	| program typedef
+	| typedef {technical_variables_clean_all();}
+	| program typedef {technical_variables_clean_all();}
 	;
 
 /* ----- Грамматика объявлений ----- */
@@ -85,19 +389,19 @@ definition:
 
 // Должно работать еще и как 	typedef_oldtype TYPEDEF typedef_newtypes ';', но 32 конфликта - оч много, поэтому только так
 typedef:
-	TYPEDEF typedef_oldtype typedef_newtypes ';' 
+	TYPEDEF {set_specification(SpecificationTypeStorageDenied);}  typedef_oldtype typedef_newtypes ';' {set_specification(SpecificationTypeGlobal);}
 	;
 
 typedef_oldtype:
-	specifier
+	predefinitor
 	;
 	
-specifier:
-	type_specifier
-	| type_qualifier
-	| specifier type_qualifier
-	| specifier type_specifier
-	;
+//specifier:
+	//type_specifier
+	//| type_qualifier
+	//| specifier type_qualifier
+//	| specifier type_specifier
+	//;
 	
 typedef_newtypes:
 	typedef_newtype {addtype($1); /*printf("%s\n",$1);*/}
@@ -114,11 +418,11 @@ typedef_newtype:
 	;
 
 predefinitor:
-	 global_storage_class_specifier
+	 storage_class_specifier
 	| type_qualifier
 	| type_specifier
 	| predefinitor type_specifier
-	| predefinitor global_storage_class_specifier
+	| predefinitor storage_class_specifier
 	| predefinitor type_qualifier
 	;
 
@@ -137,7 +441,6 @@ definitor_identificator:
 	array_or_id
 	| pointer_id type_qualifier array_or_id
 	| pointer_id array_or_id
-	| pointer_id global_storage_class_specifier
 	;
 
 /* Одна и более звездочек */
@@ -188,20 +491,23 @@ initializers:
 	;
 	
 /* с этим вопросы: глобально доступны только - 2, локально - 4, для функций толлько - 2 */
-global_storage_class_specifier:
-	EXTERN | STATIC
-	; 
+storage_class_specifier:
+	EXTERN {set_type_storage(TypeStorageExtern);}
+	| STATIC {set_type_storage(TypeStorageStatic);}
+	| REGISTER {set_type_storage(TypeStorageRegister);}
+	| AUTO {set_type_storage(TypeStorageAuto);}
+	;
 
 /* спецификатор типа (стр 35) */
 type_specifier:
 	simple_type_specifier
 	| compound_type_specifier
-	| CUSTOM_TYPE
+	| CUSTOM_TYPE {set_type_basic(TypeBasicCompound); }
 	;
 	
 /* стр 40 */
 simple_type_specifier:
-	VOID 
+	VOID {set_type_basic(TypeBasicVoid);}
 	| arithmetic_type
 	;
 
@@ -211,16 +517,22 @@ arithmetic_type:
 	;
 
 basic_type:
-	INT | FLOAT | DOUBLE | CHAR | signification
+	INT   {set_type_basic(TypeBasicInt);}
+	| FLOAT {set_type_basic(TypeBasicFloat);}
+	| DOUBLE {set_type_basic(TypeBasicDouble);}
+	| CHAR {set_type_basic(TypeBasicChar);}
+	| signification
 	;
 
 additional_type_specifier:
-	LONG_LONG | LONG | SHORT
+	LONG_LONG {set_type_additional(TypeAdditionalLongLong);}
+	| LONG {set_type_additional(TypeAdditionalLong);}
+	| SHORT {set_type_additional(TypeAdditionalShort);}
 	;
 
 signification:
-	SIGNED
-	| UNSIGNED
+	SIGNED {set_type_sign(TypeSignSigned);}
+	| UNSIGNED {set_type_sign(TypeSignSigned);}
 	;
 
 /* стр 61*/
@@ -232,34 +544,31 @@ type_qualifier:
 
 /* составные типы */
 compound_type_specifier:
-	structure
-	| union
-	| enumeration
+	structure { set_type_basic(TypeBasicCompound);}
+	| union {set_type_basic(TypeBasicCompound);}
+	| enumeration {set_type_basic(TypeBasicCompound);}
 	;
 	
 
 /* стр 45*/
 structure:
 	STRUCT NAME
-	| STRUCT '{' structure_fields '}' 
-	| STRUCT NAME '{' structure_fields '}'
+	| STRUCT {technical_variables_clean_all();} '{' {set_specification(SpecificationTypeStorageDenied);} structure_fields '}' {set_specification(SpecificationTypeGlobal);}
+	| STRUCT NAME {technical_variables_clean_all();} '{' {set_specification(SpecificationTypeStorageDenied);} structure_fields '}' {set_specification(SpecificationTypeGlobal);}
 	;
 
 structure_fields:
-	field
-	| structure_fields field
+	field {technical_variables_clean_all();}
+	| structure_fields {technical_variables_clean_all();} field {technical_variables_clean_all();}
 	;
 
 /* класс хранения указывать нельзя, но можно остальные спецификаторы*/
 field:
-	field_type field_ids ';'
+	field_type {technical_variables_clean_all();} field_ids ';'
 	;
 	
 field_type:
-	type_qualifier
-	| type_specifier
-	| field_type type_specifier
-	| field_type type_qualifier
+	predefinitor
 	;
 	
 field_ids:
@@ -274,8 +583,8 @@ field_ids:
 /* стр 52*/
 union:
 	UNION NAME
-	| UNION '{' union_fields '}' 
-	| UNION NAME '{' union_fields '}'
+	| UNION {technical_variables_clean_all();} '{' {set_specification(SpecificationTypeStorageDenied);} union_fields '}' {set_specification(SpecificationTypeGlobal);}
+	| UNION NAME {technical_variables_clean_all();} '{' {set_specification(SpecificationTypeStorageDenied);} union_fields '}' {set_specification(SpecificationTypeGlobal);}
 	;
 
 union_fields:
@@ -313,10 +622,10 @@ statement:
 	
 // Набор операторов
 statement_list:
-	statement 
-	| definition 
-	| statement_list statement 
-	| statement_list definition
+	statement {technical_variables_clean_all(); set_specification(SpecificationTypeNone);}
+	| definition {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}
+	| statement_list {technical_variables_clean_all(); set_specification(SpecificationTypeNone);} statement  {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}
+	| statement_list  {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}definition {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}
 	;
 
 // Метки
@@ -365,8 +674,13 @@ expression_for_loop:
 /* ----- Грамматика функций ----- */	
 
 function:
-	predefinitor func_id '(' arguments ')' '{' statement_list '}'
-	| predefinitor func_id '(' ')' '{' statement_list '}';
+	prefuction  '(' {set_specification(SpecificationTypeArgument);} arguments ')' {set_specification(SpecificationTypeNone);} '{' statement_list '}' {set_specification(SpecificationTypeGlobal);}
+	| prefuction '('{set_specification(SpecificationTypeArgument);} ')'{set_specification(SpecificationTypeNone);} '{' statement_list '}'{set_specification(SpecificationTypeGlobal);}
+	;
+	
+prefuction:
+	predefinitor func_id {technical_variables_clean_all();}
+	;
 	
 // Грамматика имен функций
 func_id:
@@ -387,7 +701,7 @@ assignment_expression:
 	| prefix_expression assignment_operator assignment_expression
 	;
 
-// Сложные условные выражения (да да, те самые (ебланские) конструкции типа Условие ? Выражение1 : Выражение2; )
+// Сложные условные выражения (да да, те самые (**) конструкции типа Условие ? Выражение1 : Выражение2; )
 conditional_expression:
 	logical_expression
 	| logical_expression '?' expression ':' conditional_expression
@@ -421,16 +735,17 @@ simple_expression:
 // Приведение типов (тоже может быть внутри выражений)
 cast:
 	prefix_expression
-	| '(' type_specifier ')' cast 
-	| '(' type_specifier pointer_id')' cast
+	| '(' {set_specification(SpecificationTypeStorageDenied);} {technical_variables_clean_all();} caster {technical_variables_clean_all();} ')' {set_specification(SpecificationTypeGlobal);} cast /*
+	| '(' {set_specification(SpecificationTypeStorageDenied);} predefinitor pointer_id')' {set_specification(SpecificationTypeGlobal);} cast*/
 	;
 	
+caster:
+	predefinitor
+	| predefinitor pointer_id;
+
 // Конечные члены выражения	
 primary_expression: 
-	STRING
-	| NAME
-	| INTEGER
-	| FLOATING
+	basic_unit
 	| '(' expression ')'
 	;
 	
@@ -442,7 +757,7 @@ prefix_expression:
 	| DEC prefix_expression
 	| unary_operator cast
 	| SIZEOF prefix_expression
-	| SIZEOF '(' type_specifier ')'
+	| SIZEOF '(' {set_specification(SpecificationTypeStorageDenied);} caster {technical_variables_clean_all();} ')' {set_specification(SpecificationTypeGlobal);}
 	;
 
 // Те же унарные выражения, только уже после основных выражений
@@ -460,8 +775,8 @@ postfix_expression:
 /* ----- Описание аргументов ----- */
 
 arguments:
-	predefinitor definitor
-	| arguments ',' predefinitor definitor;
+	predefinitor {technical_variables_clean_all();} definitor
+	| arguments ',' {technical_variables_clean_all();}  predefinitor {technical_variables_clean_all();} definitor;
 	
 arguments_without_type:
 	assignment_expression
@@ -526,6 +841,9 @@ void yyerror(const char *str)
   
 int main(int argc, char *argv[])
 {
+	technical_variables_clean_all();
+	technical_variables.prev_storage = SpecificationTypeGlobal;
+	set_specification(SpecificationTypeGlobal);
 	if(argc < 2)
 	{
 		printf("Not enough arguments. Please specify filename. \n");
@@ -540,4 +858,5 @@ int main(int argc, char *argv[])
 	fclose(yyin);
 	return 0;
 }
+
 
