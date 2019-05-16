@@ -131,7 +131,7 @@ volatile union test_union
 		int aa;
 	} a;
 };
-
+int unsigned long ger;
 unsigned long long x = a*b;
 //int char x;
 long* main (
@@ -149,7 +149,7 @@ int static argv)
 		b = a++;
 		return b;
 	}
-	char void * p = (void char *)malloc(sizeof(int)*height * 2 + 1);
+	char void * p = (void char *)malloc(sizeof(int short)*height * 2 + 1);
 	do
 		{
 			i++;
@@ -159,4 +159,46 @@ int static argv)
 	int **rows = (const int **)malloc(sizeof(int)*height * 2 + 1);
 
 }
+
+// тестирование свичей
+void switch_test()
+{
+	int swtest = 10;
+	
+	goto house; // метку можно более одного раза указать, даже можно ее поставить в свич
+	
+	switch(swtest)
+	{
+house:	// корректно 
+		default:
+house:	// корректно
+		break;
+		
+		
+		case 43:
+		continue;/// должен агриться (можно использовать только внутри циклов)
+		break;
+		
+		default:/// должен агриться: более одного дефолта низя
+		break;
+	}
+	
+	default: // можно использовать только в свиче
+		i+=109;
+
+	switch(98) // свич может быть пустым
+	{
+	
+	}
+
+	house:	// корректно
+	printf("Hopa-na");
+	
+	//case:
+	//i++;
+	
+	case 187: // должен агриться
+	i--;
+}
+
 
