@@ -612,7 +612,8 @@ enum_identifier:
 /* ----- Операторы ----- */
 	
 statement:
-	label
+	definition {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}
+	| label
 	| expression_statement
 	| conditional_statement
 	| loop_statement
@@ -623,16 +624,77 @@ statement:
 // Набор операторов
 statement_list:
 	statement {technical_variables_clean_all(); set_specification(SpecificationTypeNone);}
-	| definition {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}
 	| statement_list {technical_variables_clean_all(); set_specification(SpecificationTypeNone);} statement  {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}
-	| statement_list  {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}definition {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}
 	;
 
 // Метки
 label:
 	NAME ':' statement
-	| CASE conditional_expression ':' statement
-	| DEFAULT ':' statement
+	;
+	
+label_for_switch:
+	NAME ':' statement_for_switch
+	| CASE conditional_expression ':' statement_for_switch
+	| DEFAULT ':' statement_for_switch
+	;
+	
+statement_for_switch:
+	definition {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}
+	| label_for_switch
+	| expression_statement
+	| conditional_statement
+	| loop_statement
+	| jump_for_switch_statement
+	| '{' statement_for_switch_list '}'
+	;
+
+statement_for_switch_list:
+	statement_for_switch {technical_variables_clean_all(); set_specification(SpecificationTypeNone);}
+	| statement_for_switch_list {technical_variables_clean_all(); set_specification(SpecificationTypeNone);} statement_for_switch {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}
+	;
+	
+statement_for_loop:
+	definition {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}
+	| label
+	| expression_statement
+	| conditional_for_loop_statement
+	| loop_statement
+	| jump_for_loop_statement
+	| '{' statement_for_loop_list '}'
+	;
+	
+statement_for_loop_list:
+	statement_for_loop {technical_variables_clean_all(); set_specification(SpecificationTypeNone);}
+	| statement_for_loop_list {technical_variables_clean_all(); set_specification(SpecificationTypeNone);} statement_for_loop {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}
+	;
+	
+conditional_for_loop_statement:
+	IF '(' expression ')' statement_for_loop
+	| IF '(' expression ')' statement_for_loop ELSE statement_for_loop
+	| SWITCH '(' expression ')' statement_for_switch_loop
+	;
+
+statement_for_switch_loop:
+	definition {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}
+	| label_for_switch
+	| expression_statement
+	| conditional_for_loop_statement
+	| loop_statement
+	| jump_for_switch_loop_statement
+	| '{' statement_for_switch_loop_list '}'
+	;
+	
+jump_for_switch_loop_statement:
+	GOTO NAME ';'
+	| CONTINUE ';'
+	| BREAK ';'
+	| RETURN ';'
+	| RETURN expression ';'
+	;
+	
+statement_for_switch_loop_list:
+	statement_for_switch_loop {technical_variables_clean_all(); set_specification(SpecificationTypeNone);}
+	| statement_for_switch_loop_list {technical_variables_clean_all(); set_specification(SpecificationTypeNone);} statement_for_switch_loop {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}
 	;
 
 // Выражения
@@ -645,24 +707,33 @@ expression_statement:
 conditional_statement:
 	IF '(' expression ')' statement
 	| IF '(' expression ')' statement ELSE statement
-	| SWITCH '(' expression ')' statement
+	| SWITCH '(' expression ')' statement_for_switch
 	;
 	
 // Переходы
 jump_statement:
 	GOTO NAME ';'
-	| CONTINUE ';'
-	| BREAK ';'
 	| RETURN ';'
 	| RETURN expression ';'
 	;
 	
+jump_for_switch_statement:
+	jump_statement
+	| BREAK ';'
+	;
+
+jump_for_loop_statement:
+	jump_statement
+	| CONTINUE ';'
+	| BREAK ';'
+	;
+	
 // Циклы
 loop_statement:
-	WHILE '(' expression ')' statement
-	| DO statement WHILE '(' expression ')' ';'
-	| FOR '(' expression_for_loop ';' expression_for_loop ')' statement
-	| FOR '(' expression_for_loop ';' expression_for_loop ';' expression ')' statement
+	WHILE '(' expression ')' statement_for_loop
+	| DO statement_for_loop WHILE '(' expression ')' ';'
+	| FOR '(' expression_for_loop ';' expression_for_loop ')' statement_for_loop
+	| FOR '(' expression_for_loop ';' expression_for_loop ';' expression ')' statement_for_loop
 	;
 	
 // Выражения для циклов
