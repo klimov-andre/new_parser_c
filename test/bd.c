@@ -1,4 +1,3 @@
-
 struct book
 {
 	char name[256];
@@ -95,7 +94,7 @@ int check(int n)
 void del(int n)
 {
 	if (base == NULL)
-        printf("\nСписок пуст\n\n");
+        printf("\nпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ\n\n");
 	else
 	{
 		struct Node *p;
@@ -118,14 +117,14 @@ void del(int n)
 			}
 			if ((i != n) || !p)
 			{
-                printf("\nТакого элемента нет\n\n");
+                printf("\nпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ\n\n");
 				return;
 			}
 			x->next = p->next;
 			p = NULL;
 		}
 		free(p);
-		printf("\nЭлемент удален\n\n");
+		printf("\nпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ\n\n");
 	}
 }
 void printel(struct Node *p)
@@ -133,30 +132,30 @@ void printel(struct Node *p)
     int i;
     printf
     (
-        "Название: %s\n\Автор: %s\n\Год издания: %d\n\Мировой рейтинг: %.2lf\n",
+        "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: %s\n\пїЅпїЅпїЅпїЅпїЅ: %s\n\пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: %d\n\пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: %.2lf\n",
         p->b.name, p->b.author, p->b.year, p->b.stats
     );
     for (i = 0; i < p->b.toms; i++)
     {
-        printf ("Количество страниц %d-го тома: %d\n", i+1, p->b.pages[i]);
+        printf ("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ %d-пїЅпїЅ пїЅпїЅпїЅпїЅ: %d\n", i+1, p->b.pages[i]);
     }
     switch (p->b.type)
     {
         case (poem):
-            printf ("(стихи)\nРифма: ");
+            printf ("(пїЅпїЅпїЅпїЅпїЅ)\nпїЅпїЅпїЅпїЅпїЅ: ");
             switch (p->b.extra.rifma)
             {
                 case (horey):
-                    printf("хорей\n");
+                    printf("пїЅпїЅпїЅпїЅпїЅ\n");
                     break;
                 case (yamb):
-                    printf("ямб\n");
+                    printf("пїЅпїЅпїЅ\n");
                     break;
             }
             break;
         case (prose):
-            printf("(проза)\n");
-            printf("Жанр: %s\n", p->b.extra.janr);
+            printf("(пїЅпїЅпїЅпїЅпїЅ)\n");
+            printf("пїЅпїЅпїЅпїЅ: %s\n", p->b.extra.janr);
             break;
     }
     printf("___________________________________\n");
@@ -165,10 +164,10 @@ void printel(struct Node *p)
 void print()
 {
 	if (base == NULL)
-        printf("\nСписок пуст\n\n");
+        printf("\nпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ\n\n");
 	else
 	{
-        printf("\nЭлементы списка:\n\n");
+        printf("\nпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ:\n\n");
 		struct Node *p = base;
 		int i = 1;
 		do
@@ -186,7 +185,7 @@ void print()
 void delall()
 {
 	if (base == NULL)
-        printf("\nСписок пуст\n\n");
+        printf("\nпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ\n\n");
 	else
 	{
 		struct Node *p = base;
@@ -196,20 +195,20 @@ void delall()
 			free(p);
 			p = base;
 		} while (p != NULL);
-		printf("\nСписок удален\n\n");
+		printf("\nпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ\n\n");
 	}
 }
 
 void search ()
 {
     if (base == NULL)
-        printf("\nСписок пуст\n\n");
+        printf("\nпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ\n\n");
 	else
 	{
         char s[256];
         char buf[256];
         double d;
-        printf("Ключевое слово: ");
+        printf("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ: ");
         fflush(stdin);
         fgets(s, 256, stdin);
         *strrchr(s, '\n') = '\0';
@@ -222,22 +221,22 @@ void search ()
 
         do
         {
-            if (!strcmp(s, "стихи") && p->b.type == 0)
+            if (!strcmp(s, "пїЅпїЅпїЅпїЅпїЅ") && p->b.type == 0)
             {
                 printf("%d)\n", i);
                 printel(p);
             }
-            else if (!strcmp(s, "проза") && p->b.type == 1)
+            else if (!strcmp(s, "пїЅпїЅпїЅпїЅпїЅ") && p->b.type == 1)
             {
                 printf("%d)\n", i);
                 printel(p);
             }
-            else if (!strcmp(s, "ямб") && p->b.extra.rifma == 0)
+            else if (!strcmp(s, "пїЅпїЅпїЅ") && p->b.extra.rifma == 0)
             {
                 printf("%d)\n", i);
                 printel(p);
             }
-            else if (!strcmp(s, "хорей") && p->b.extra.rifma == 1)
+            else if (!strcmp(s, "пїЅпїЅпїЅпїЅпїЅ") && p->b.extra.rifma == 1)
             {
                 printf("%d)\n", i);
                 printel(p);
@@ -317,8 +316,8 @@ int main()
 {
 	//setlocale(LC_ALL, "Russian");
 
-	SetConsoleCP(1251);// установка кодовой страницы win-cp 1251 в поток ввода
-    SetConsoleOutputCP(1251); // установка кодовой страницы win-cp 1251 в поток вывода
+	SetConsoleCP(1251);// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ win-cp 1251 пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+    SetConsoleOutputCP(1251); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ win-cp 1251 пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 
     printf("XX  XX  XX  XX  XX  XX  XXXXXX  XX  XX\nXX XX   XX  XX  XX  XX  XX      XX  XX\nXXXX    XX  XX  XX XXX  XX      XX XXX\nXXXX    XXXXXX  XXXXXX  XX      XXXXXX\nXX XX   XX  XX  XXX XX  XX      XXX XX\nXX  XX  XX  XX  XX  XX  XX      XX  XX\n\n\n");
 
@@ -329,15 +328,15 @@ int main()
 
 	do
 	{
-		printf("\n1. Добавить элемент\n");
-		printf("2. Вывести список\n");
-		printf("3. Удалить элемент\n");
-		printf("4. Удалить весь список\n");
-		printf("5. Поиск\n");
-		printf("0. Выйти\n");
+		printf("\n1. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ\n");
+		printf("2. пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ\n");
+		printf("3. пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ\n");
+		printf("4. пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ\n");
+		printf("5. пїЅпїЅпїЅпїЅпїЅ\n");
+		printf("0. пїЅпїЅпїЅпїЅпїЅ\n");
 		while (1)
 		{
-            printf("Что нужно сделать? ");
+            printf("пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ? ");
             fflush(stdin);
             if (scanf("%d",&x))
                 break;
@@ -346,11 +345,11 @@ int main()
 		{
 		case 1:
 			p = malloc(sizeof (struct Node));
-			printf("\n1. Добавить элемент в начало\n");
-			printf("2. Добавить элемент в конец\n");
-			printf("3. Добавить элемент в место под номером...\n");
-			printf("0. Назад\n");
-			printf("Что нужно сделать? ");
+			printf("\n1. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ\n");
+			printf("2. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ\n");
+			printf("3. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ...\n");
+			printf("0. пїЅпїЅпїЅпїЅпїЅ\n");
+			printf("пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ? ");
 			fflush(stdin);
             scanf("%d",&y);
             fflush(stdin);
@@ -358,28 +357,28 @@ int main()
                 break;
             if (y == 3)
             {
-                printf ("\nНа какое место поставить элемент? ");
+                printf ("\nпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ? ");
                 fflush(stdin);
                 scanf("%d", &n);
                 fflush(stdin);
                 if (!check(n))
                 {
-                    printf("\nТакого элемента нет!\n\n");
+                    printf("\nпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ!\n\n");
                     break;
                 }
             }
-            printf("Название: ");
+            printf("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: ");
             fflush(stdin);
             fgets(p->b.name, 256, stdin);
             *strrchr(p->b.name, '\n') = '\0';
-            printf("Автор: ");
+            printf("пїЅпїЅпїЅпїЅпїЅ: ");
             fflush(stdin);
             fgets(p->b.author, 256, stdin);
             *strrchr(p->b.author, '\n') = '\0';
             while (1)
             {
                 fflush(stdin);
-                printf("Количество томов: ");
+                printf("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ: ");
                 if (scanf("%d",&p->b.toms))
                     break;
             }
@@ -389,7 +388,7 @@ int main()
                 while (1)
                 {
                     fflush(stdin);
-                    printf("Количество страниц %d-го тома: ", i + 1);
+                    printf("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ %d-пїЅпїЅ пїЅпїЅпїЅпїЅ: ", i + 1);
                     if (scanf("%d",&(p->b.pages[i])))
                         break;
                 }
@@ -397,14 +396,14 @@ int main()
             while (1)
             {
                 fflush(stdin);
-                printf("Год: ");
+                printf("пїЅпїЅпїЅ: ");
                 if (scanf("%d",&p->b.year))
                     break;
             }
             while (1)
             {
                 fflush(stdin);
-                printf("Мировой рейтинг: ");
+                printf("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: ");
                 if (scanf("%lf",&p->b.stats))
                     break;
             }
@@ -412,7 +411,7 @@ int main()
             while (1)
             {
                 fflush(stdin);
-                printf("Стихи (0) или проза (1): ");
+                printf("пїЅпїЅпїЅпїЅпїЅ (0) пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (1): ");
                 if (scanf("%d",&p->b.type) && (p->b.type == 0 || p->b.type == 1))
                     break;
             }
@@ -420,14 +419,14 @@ int main()
             {
                 while (1)
                 {
-                    printf("Рифма (Ямб - 0, хорей - 1): ");
+                    printf("пїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅ - 0, пїЅпїЅпїЅпїЅпїЅ - 1): ");
                     if (scanf("%d",&p->b.extra.rifma) && (p->b.extra.rifma == 0 || p->b.extra.rifma == 1))
                         break;
                 }
             }
             else
             {
-                printf("Жанр: ");
+                printf("пїЅпїЅпїЅпїЅ: ");
                 fflush(stdin);
                 fgets(p->b.extra.janr, 256, stdin);
                 *strrchr(p->b.extra.janr, '\n') = '\0';
@@ -449,7 +448,7 @@ int main()
                     printf("\n");
                     break;
             }
-            printf("\nЭлемент добавлен!\n\n");
+            printf("\nпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!\n\n");
 			break;
 		case 2:
 			print();
@@ -458,7 +457,7 @@ int main()
             while (1)
             {
                 fflush(stdin);
-                printf("Номер элемента: ");
+                printf("пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: ");
                 if (scanf("%d",&n))
                     break;
             }

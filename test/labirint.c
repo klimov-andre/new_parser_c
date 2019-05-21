@@ -1,6 +1,9 @@
-﻿
+﻿#define NULL(x) sidvjcpsiedc
 void getSizeL(int *w, int *l)// Получаем размеры лабиринта
 {
+	int x = 0B01;
+	const int x = 0XFF;
+
 	int a, b;
 	printf("Размеры лабиринта\n");
 

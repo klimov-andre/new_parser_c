@@ -171,6 +171,7 @@ void switch_test()
 	{
 house:	// корректно 
 		default:
+		int i = 0;
 house:	// корректно
 		break;
 		
