@@ -488,6 +488,7 @@ initializers:
 	| initializers ',' basic_unit
 	| initializers ',' initializer_list
 	| initializer_list
+	| sizeof
 	;
 	
 /* с этим вопросы: глобально доступны только - 2, локально - 4, для функций толлько - 2 */
@@ -738,7 +739,7 @@ loop_statement:
 	
 // Выражения для циклов
 expression_for_loop:
-	predefinitor definitor /* объявление переменной может быть прямо в скобочках */
+	predefinitor {technical_variables_clean_all();} definitor /* объявление переменной может быть прямо в скобочках */
 	| expression /* либо сразу выражение */
 	;
 
@@ -749,6 +750,8 @@ function:
 	| prefuction '('{set_specification(SpecificationTypeArgument);} ')'{set_specification(SpecificationTypeNone);} '{' statement_list '}'{set_specification(SpecificationTypeGlobal);}
 	;
 	
+	
+//TODO ne sabit' {technical_variables_clean_all();}
 prefuction:
 	predefinitor func_id {technical_variables_clean_all();}
 	;
@@ -827,10 +830,14 @@ prefix_expression:
 	| INC prefix_expression
 	| DEC prefix_expression
 	| unary_operator cast
-	| SIZEOF prefix_expression
-	| SIZEOF '(' {set_specification(SpecificationTypeStorageDenied);} caster {technical_variables_clean_all();} ')' {set_specification(SpecificationTypeGlobal);}
+	| sizeof
 	;
 
+sizeof:
+	SIZEOF prefix_expression
+	| SIZEOF '(' {set_specification(SpecificationTypeStorageDenied);} {technical_variables_clean_all();} caster {technical_variables_clean_all();} ')' {set_specification(SpecificationTypeGlobal);}
+	;
+ 
 // Те же унарные выражения, только уже после основных выражений
 postfix_expression:
 	primary_expression

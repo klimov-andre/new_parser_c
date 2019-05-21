@@ -46,11 +46,17 @@ string ({dquotes_one}|{dquotes_two})+[\t\n ]*({dquotes_one}|{dquotes_two})*
 
 comment (\/{2,}(.*\\(\n))+.*)|(\/{2,}(.*)(\n))|(\/\*([^*]|\*+[^*/])*\*+\/)
 
+squotes_one (\'([^\\\'\n]*(\\\'|\\)?)*(\'|[^\\]\n))
+
+ch_or_digit [_a-zA-Z0-9]
+
 %option noyywrap
 %option yylineno
 %%
+#("define"|"include"|"ifdef"|"ifndef"|"endif"|"pragma")([^\n\\]*(\\n|\\\r\n|\\)?)*([^\\]\n)
 {comment} ;
 {string} 		{return(STRING);}
+{squotes_one}	{return(STRING);}
 "auto"			{return(AUTO);}
 "break"			{return(BREAK);}
 "case"			{return(CASE);}
@@ -135,7 +141,9 @@ comment (\/{2,}(.*\\(\n))+.*)|(\/{2,}(.*)(\n))|(\/\*([^*]|\*+[^*/])*\*+\/)
 
 [_a-zA-Z][_a-zA-Z0-9]*		{yylval.str = strdup(yytext); return (get_type(strdup(yytext)));}
 [0-9]+						{return (INTEGER);}
-[0-9]*\.[0-9]*				{return (FLOATING);}// очень плохая регулярка
+[0-9]+([.][0-9]*)?|[.][0-9]+				{return (FLOATING);}// очень плохая регулярка
+0[bB][01]+		{return(INTEGER);}
+0[xX][0-9a-fA-F]+	{return(INTEGER);}
 
 [\n]			;
 [ \t]+			;
