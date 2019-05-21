@@ -1,17 +1,17 @@
+.SILENT:
+
 FNAME = test
 SOURCES = src
 TEMPORARY = tmp
 BUILD = run
 TEST_DIR = test
-TEST_FNAME_1 = test.c
-TEST_FNAME_2 = labirint.c
-TEST_FNAME_3 = bd.c
-
 
 lex:
+	mkdir -p $(TEMPORARY)
 	lex -o $(TEMPORARY)/lex.yy.c $(SOURCES)/$(FNAME).l
-	
-yacc: $(SOURCES)/$(FNAME).y
+
+yacc:
+	mkdir -p $(TEMPORARY)
 	yacc -dt  $(SOURCES)/$(FNAME).y -o $(TEMPORARY)/y.tab.c
 
 clean: 
@@ -29,6 +29,9 @@ all:
 rebuild: clean all
 
 mtest:
-	./$(BUILD)/$(FNAME) ./$(TEST_DIR)/$(TEST_FNAME_1)
-	./$(BUILD)/$(FNAME) ./$(TEST_DIR)/$(TEST_FNAME_2)
-	./$(BUILD)/$(FNAME) ./$(TEST_DIR)/$(TEST_FNAME_3)
+	for file in $(TEST_DIR)/*.c ; \
+	do \
+		 echo "$$file" ; \
+		 ./$(BUILD)/$(FNAME) $$file ;\
+	done 
+	
