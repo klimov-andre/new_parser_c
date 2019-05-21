@@ -379,7 +379,6 @@ program:
 	| typedef {technical_variables_clean_all();}
 	| program typedef {technical_variables_clean_all();}
 	;
-
 /* ----- Грамматика объявлений ----- */
 	
 definition:
@@ -435,7 +434,23 @@ definitor:
 	definitor_identificator
 	| definitor_identificator '=' expression
 	| definitor_identificator '=' initializer_list
+//	| func_id '('{set_specification(SpecificationTypeArgument);} ')'{set_specification(SpecificationTypeNone);} ';' 
 	;
+/*
+func_prototype:
+	func_id  '(' {set_specification(SpecificationTypeArgument);} arguments_for_prototype ')' {set_specification(SpecificationTypeNone);} ';'
+	| NAME '('{set_specification(SpecificationTypeArgument);} ')'{set_specification(SpecificationTypeNone);} ';' 
+	;
+/*
+arguments_for_prototype:
+	argument_for_prototype {technical_variables_clean_all();}
+	| arguments_for_prototype ',' {technical_variables_clean_all();} argument_for_prototype {technical_variables_clean_all();}
+	;
+
+argument_for_prototype:
+	predefinitor
+	| predefinitor definitor
+	;*/
 
 definitor_identificator:
 	array_or_id
@@ -467,7 +482,7 @@ dimension:
 	;
 
 int_dimension:
-	'[' INTEGER ']'
+	'[' expression ']'
 	| int_dimension '[' INTEGER ']'
 	;
 
@@ -746,10 +761,22 @@ expression_for_loop:
 /* ----- Грамматика функций ----- */	
 
 function:
-	prefuction  '(' {set_specification(SpecificationTypeArgument);} arguments ')' {set_specification(SpecificationTypeNone);} '{' statement_list '}' {set_specification(SpecificationTypeGlobal);}
-	| prefuction '('{set_specification(SpecificationTypeArgument);} ')'{set_specification(SpecificationTypeNone);} '{' statement_list '}'{set_specification(SpecificationTypeGlobal);}
+/*	prefuction  '(' {set_specification(SpecificationTypeArgument);} arguments ')' {set_specification(SpecificationTypeNone);} '{' statement_list '}' {set_specification(SpecificationTypeGlobal);}
+	|*/ func_prototype '{' statement_list '}'{set_specification(SpecificationTypeGlobal);}
+	| func_prototype '{' '}'{set_specification(SpecificationTypeGlobal);}
+	| func_prototype ';'
 	;
-	
+
+func_prototype:
+	prefuction '('{set_specification(SpecificationTypeArgument);} ')'{set_specification(SpecificationTypeNone);}
+	| prefuction  '(' {set_specification(SpecificationTypeArgument);} arguments ')' {set_specification(SpecificationTypeNone);} 
+	| prefuction  '(' {set_specification(SpecificationTypeArgument);} arguments_without_type ')' definitions {set_specification(SpecificationTypeNone);}	
+	;
+
+definitions:
+	definition {technical_variables_clean_all();}
+	| definitions {technical_variables_clean_all();} definition {technical_variables_clean_all();}
+	;
 	
 //TODO ne sabit' {technical_variables_clean_all();}
 prefuction:
@@ -854,7 +881,9 @@ postfix_expression:
 
 arguments:
 	predefinitor {technical_variables_clean_all();} definitor
-	| arguments ',' {technical_variables_clean_all();}  predefinitor {technical_variables_clean_all();} definitor;
+	| arguments ',' {technical_variables_clean_all();}  predefinitor {technical_variables_clean_all();} definitor
+	| predefinitor {technical_variables_clean_all();}
+	;
 	
 arguments_without_type:
 	assignment_expression

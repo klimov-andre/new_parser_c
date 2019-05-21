@@ -50,10 +50,17 @@ squotes_one (\'([^\\\'\n]*(\\\'|\\)?)*(\'|[^\\]\n))
 
 ch_or_digit [_a-zA-Z0-9]
 
+Sign [+-] 
+ 
+Num [0-9] 
+ 
+Expo [eE]{Sign}?{Num}+ 
+
 %option noyywrap
 %option yylineno
 %%
-#("define"|"include"|"ifdef"|"ifndef"|"endif"|"pragma")([^\n\\]*(\\n|\\\r\n|\\)?)*([^\\]\n)
+#[ \t]*(define|include|if|else|ifdef|ifndef|endif|pragma)([^\n\\]*(\\\n|\\\r\n|\\)?)*([^\\]\n) ;
+#[ \t]*(define|include|if|else|ifdef|ifndef|endif|pragma) ;
 {comment} ;
 {string} 		{return(STRING);}
 {squotes_one}	{return(STRING);}
@@ -142,11 +149,17 @@ ch_or_digit [_a-zA-Z0-9]
 [_a-zA-Z][_a-zA-Z0-9]*		{yylval.str = strdup(yytext); return (get_type(strdup(yytext)));}
 [0-9]+						{return (INTEGER);}
 [0-9]+([.][0-9]*)?|[.][0-9]+				{return (FLOATING);}// очень плохая регулярка
+[eE][+-]?[0-9]+	{return (FLOATING);}
+
+ 
+({Num}*\.{Num}+)({Expo})? {return (FLOATING);}
+({Num}+\.{Num}*)({Expo})? {return (FLOATING);}
+
 0[bB][01]+		{return(INTEGER);}
 0[xX][0-9a-fA-F]+	{return(INTEGER);}
 
-[\n]			;
+[\n\r]			;
 [ \t]+			;
-
+. ;
 %%
 
