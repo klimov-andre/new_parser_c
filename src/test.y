@@ -341,7 +341,7 @@
 
 %token UNSIGNED SIGNED AUTO CHAR LONG INT DOUBLE FLOAT VOID SHORT LONG_LONG
 %token STRUCT UNION ENUM TYPEDEF
-%token EXTERN INLINE REGISTER STATIC CONST VOLATILE
+%token EXTERN REGISTER STATIC CONST VOLATILE
 %token PTR STARS
 %token SHIFT_RIGHT_ASSIGN SHIFT_LEFT_ASSIGN SUB_ASSIGN OR_ASSIGN DIV_ASSIGN ADD_ASSIGN MUL_ASSIGN MOD_ASSIGN AND_ASSIGN XOR_ASSIGN
 %token BREAK CONTINUE DEFAULT RETURN GOTO SIZEOF
@@ -354,6 +354,9 @@
 %right  SHIFT_RIGHT_ASSIGN SHIFT_LEFT_ASSIGN SUB_ASSIGN OR_ASSIGN DIV_ASSIGN ADD_ASSIGN MUL_ASSIGN MOD_ASSIGN AND_ASSIGN XOR_ASSIGN
 %left OR AND '|' '^' '&' EQ NE GE LE '>' '<' SHIFT_RIGHT SHIFT_LEFT '+' '-'
 %left '*' '/' INC DEC PTR
+
+%nonassoc IFHIGH
+%nonassoc ELSE
 
 %type<str> NAME typedef_newtype
 
@@ -454,7 +457,7 @@ argument_for_prototype:
 
 definitor_identificator:
 	array_or_id
-	| pointer_id type_qualifier array_or_id
+	| pointer_id type_qualifier definitor_identificator
 	| pointer_id array_or_id
 	;
 
@@ -685,7 +688,7 @@ statement_for_loop_list:
 	;
 	
 conditional_for_loop_statement:
-	IF '(' expression ')' statement_for_loop
+	IF '(' expression ')' statement_for_loop %prec IFHIGH
 	| IF '(' expression ')' statement_for_loop ELSE statement_for_loop
 	| SWITCH '(' expression ')' statement_for_switch_loop
 	;
@@ -721,7 +724,7 @@ expression_statement:
 	
 // Условные операторы
 conditional_statement:
-	IF '(' expression ')' statement
+	IF '(' expression ')' statement %prec IFHIGH
 	| IF '(' expression ')' statement ELSE statement
 	| SWITCH '(' expression ')' statement_for_switch
 	;
@@ -748,13 +751,15 @@ jump_for_loop_statement:
 loop_statement:
 	WHILE '(' expression ')' statement_for_loop
 	| DO statement_for_loop WHILE '(' expression ')' ';'
-	| FOR '(' expression_for_loop ';' expression_for_loop ')' statement_for_loop
-	| FOR '(' expression_for_loop ';' expression_for_loop ';' expression ')' statement_for_loop
+	| FOR '(' expression_for_loop ';' expression_for_loop ';' expression_for_loop ')' statement_for_loop
+/*	| FOR '(' expression_for_loop ';' expression ';' ')' statement_for_loop
+	| FOR '(' expression_for_loop ';' ';' expression ')' statement_for_loop
+	| FOR '('  ';' expression ';' expression ')' statement_for_loop*/
 	;
 	
 // Выражения для циклов
 expression_for_loop:
-	predefinitor {technical_variables_clean_all();} definitor /* объявление переменной может быть прямо в скобочках */
+	| predefinitor {technical_variables_clean_all();} definitor /* объявление переменной может быть прямо в скобочках */
 	| expression /* либо сразу выражение */
 	;
 
@@ -802,35 +807,16 @@ assignment_expression:
 	| prefix_expression assignment_operator assignment_expression
 	;
 
-// Сложные условные выражения (да да, те самые (**) конструкции типа Условие ? Выражение1 : Выражение2; )
+// Тернарные выражения
 conditional_expression:
-	logical_expression
-	| logical_expression '?' expression ':' conditional_expression
-	;
-
-// Логические выражения (выражения с логическими операторами)
-logical_expression:
-	compare_expression
-	| logical_expression logical_operator compare_expression
-	;
-
-// Простые условные выражения (только со знаками сравнения)
-compare_expression:
-	shift_expression
-	| compare_expression compare_operator shift_expression
-	;
-	
-// Выражения со сдвигами
-shift_expression:
 	simple_expression
-	| shift_expression SHIFT_LEFT simple_expression
-	| shift_expression SHIFT_RIGHT simple_expression
+	| simple_expression '?' expression ':' expression
 	;
-	
-// Самые простые выражения (там где обычные арифметические операции)
+
+// Выражения с арифметическими операциями
 simple_expression:
 	cast
-	| simple_expression calc_operator cast
+	| simple_expression operator cast
 	;
 	
 // Приведение типов (тоже может быть внутри выражений)
@@ -891,6 +877,14 @@ arguments_without_type:
 	;
 	
 /* ----- Всякие разные операторы ----- */
+
+operator:
+	calc_operator
+	| compare_operator
+	| logical_operator
+	| SHIFT_LEFT
+	| SHIFT_RIGHT
+	;
 
 assignment_operator:
 	'='

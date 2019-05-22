@@ -4,6 +4,7 @@
 	#include "y.tab.h"
 	#include <stdlib.h>
 	
+	extern FILE *yyin;
 	extern struct typedef_list
 	{
 		char *type_id;
@@ -36,17 +37,31 @@
 		return NAME;
 	}
 	
+	void literal()
+	{
+		char c;
+		while((c = getc(yyin)) != '\'' && c != '\n' && c != 0)
+			printf("%c\n", c);
+	}
+	
+	void string()
+	{
+		char c;
+		while((c = getc(yyin)) != '\"' && c != 0)
+			printf("%c\n", c);
+	}
+	
 %}
 
 /*  не хватает строковогго литерала*/
 dquotes_one (\"([^\\\"\n]*(\\\"|\\\n|\\)?)*(\"|[^\\]\n))
 dquotes_two (\"([^\\\"\n]*(\\\"|\\\n|\\)?)*([^\\]\"|[^\\]\n))
 
-string ({dquotes_one}|{dquotes_two})+[\t\n ]*({dquotes_one}|{dquotes_two})*
+string ({dquotes_one}|{dquotes_two})+([\t\n ]*)({dquotes_one}|{dquotes_two})*
 
 comment (\/{2,}(.*\\(\n))+.*)|(\/{2,}(.*)(\n))|(\/\*([^*]|\*+[^*/])*\*+\/)
 
-squotes_one (\'([^\\\'\n]*(\\\'|\\)?)*(\'|[^\\]\n))
+squotes_one (\'(\\.|.{0,5})\')
 
 ch_or_digit [_a-zA-Z0-9]
 
@@ -62,8 +77,9 @@ Expo [eE]{Sign}?{Num}+
 #[ \t]*(define|include|if|else|ifdef|ifndef|endif|pragma)([^\n\\]*(\\\n|\\\r\n|\\)?)*([^\\]\n) ;
 #[ \t]*(define|include|if|else|ifdef|ifndef|endif|pragma) ;
 {comment} ;
-{string} 		{return(STRING);}
-{squotes_one}	{return(STRING);}
+{squotes_one} return STRING;
+{string} return STRING;
+
 "auto"			{return(AUTO);}
 "break"			{return(BREAK);}
 "case"			{return(CASE);}
@@ -80,7 +96,6 @@ Expo [eE]{Sign}?{Num}+
 "for"			{return(FOR);}
 "goto"			{return(GOTO);}
 "if"			{return(IF);}
-"inline"		{return(INLINE);}
 "int"			{return(INT);}
 "long long"     {return(LONG_LONG);}
 "long"			{return(LONG);}
@@ -149,7 +164,7 @@ Expo [eE]{Sign}?{Num}+
 [_a-zA-Z][_a-zA-Z0-9]*		{yylval.str = strdup(yytext); return (get_type(strdup(yytext)));}
 [0-9]+						{return (INTEGER);}
 [0-9]+([.][0-9]*)?|[.][0-9]+				{return (FLOATING);}// очень плохая регулярка
-[eE][+-]?[0-9]+	{return (FLOATING);}
+[0-9]*[eE][+-]?[0-9]+	{return (FLOATING);}
 
  
 ({Num}*\.{Num}+)({Expo})? {return (FLOATING);}
