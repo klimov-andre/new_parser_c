@@ -495,6 +495,7 @@ basic_unit:
 	| INTEGER
 	| FLOATING
 	| STRING
+	| sizeof
 	;
 
 initializer_list:
@@ -506,7 +507,6 @@ initializers:
 	| initializers ',' basic_unit
 	| initializers ',' initializer_list
 	| initializer_list
-	| sizeof
 	;
 	
 /* с этим вопросы: глобально доступны только - 2, локально - 4, для функций толлько - 2 */
@@ -797,14 +797,8 @@ func_id:
 
 // Выражения могут быть перечислены в строчку через запятую
 expression:
-	assignment_expression
-	| expression ',' assignment_expression
-	;
-
-// Присваивания в выражении
-assignment_expression:
-	conditional_expression /* Если нет знака присваивания, то это может быть условие */
-	| prefix_expression assignment_operator assignment_expression
+	conditional_expression
+	| expression ',' conditional_expression
 	;
 
 // Тернарные выражения
@@ -813,7 +807,7 @@ conditional_expression:
 	| simple_expression '?' expression ':' expression
 	;
 
-// Выражения с арифметическими операциями
+// Выражения с операторами (=, +, - и т.д.)
 simple_expression:
 	cast
 	| simple_expression operator cast
@@ -843,11 +837,10 @@ prefix_expression:
 	| INC prefix_expression
 	| DEC prefix_expression
 	| unary_operator cast
-	| sizeof
 	;
 
 sizeof:
-	SIZEOF prefix_expression
+	SIZEOF '(' expression ')' 
 	| SIZEOF '(' {set_specification(SpecificationTypeStorageDenied);} {technical_variables_clean_all();} caster {technical_variables_clean_all();} ')' {set_specification(SpecificationTypeGlobal);}
 	;
  
@@ -872,14 +865,15 @@ arguments:
 	;
 	
 arguments_without_type:
-	assignment_expression
-	| arguments_without_type ',' assignment_expression
+	simple_expression
+	| arguments_without_type ',' simple_expression
 	;
 	
 /* ----- Всякие разные операторы ----- */
 
 operator:
-	calc_operator
+	assignment_operator
+	| calc_operator
 	| compare_operator
 	| logical_operator
 	| SHIFT_LEFT
