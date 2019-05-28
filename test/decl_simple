@@ -1,0 +1,10 @@
+int main(){
+	int x = 34;
+	int y = 34;
+	char z = 'd';
+	double d = -3.23;
+	double d2 = 3.02530e+01;
+	float f = -4.f;
+	float f2 = -.44;
+
+}

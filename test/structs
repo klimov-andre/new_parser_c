@@ -1,0 +1,16 @@
+struct my_struct {
+	int y;
+	int z;
+	char c;
+};
+
+int main(){
+
+	struct my_struct x;
+	x.z = 5;
+	x.y = -5;
+
+	x.c = x.z = z.y + 10; 	 
+
+	return x.y + x.z;
+}

@@ -1,0 +1,311 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <locale.h>
+
+
+const int OURSIZE = 5;
+int Sravnenya_massiv = 0;
+int Sravnenya_list = 0;
+int Prisvaivanya_massiv = 0;
+unsigned long long Prisvaivanya_list = 0;
+
+/* Структура*/
+typedef struct simple
+{
+	int meaning;
+	struct simple* next;
+}simple;
+/* Возвращает значение J-ого элемента линейного списка */
+int listMeaning(simple* begin, int j)
+{
+	while (j)
+	{
+		begin = begin->next;
+		j--;
+		Prisvaivanya_list++;
+	}
+	return begin->meaning;
+}
+/* Инициализация списка рандомными значениями */
+void initStructAndMassiv(simple** begin, int count, int** mass, int MODE)
+{
+	(*begin) = (simple*)malloc(sizeof(simple));
+	(*mass) = (int*)malloc(4 * count);
+	if (MODE == 1)
+		(*begin)->meaning = (*mass)[0] = rand() % 10;
+	else if (MODE == 2)
+		(*begin)->meaning = (*mass)[0] = 0;
+	else if (MODE == 3)
+		(*begin)->meaning = (*mass)[0] = count;
+	(*begin)->next = NULL;
+
+	simple* head = *begin;
+
+	for (int i = 1; i < count; i++)
+	{
+		(*begin)->next= (simple*)malloc(sizeof(simple));
+		(*begin) = (*begin)->next;
+	if (MODE == 1)
+		(*begin)->meaning = (*mass)[i]= rand() % 10;
+	else if (MODE == 2)
+		(*begin)->meaning = (*mass)[i] = i;
+	else if (MODE == 3)
+		(*begin)->meaning = (*mass)[i] = count-i;
+		(*begin)->next = NULL;
+	}
+
+	(*begin) = head;
+}
+/* Вывод линейного списка */
+void printStruct(simple* begin)
+{
+	while (begin != NULL)
+	{
+		printf("%d->", begin->meaning);
+		begin = begin->next;
+	}
+	printf("Это наш линейный список\n");
+}
+/*  Сортируем методом вставок */
+void massivSort(int* mass, int massivSize)
+{
+	int x;
+	int j;
+	for (int i = 1; i < massivSize; i++)
+	{
+		x = mass[i];
+		j = i;
+		Prisvaivanya_massiv++;
+		while (++Sravnenya_massiv && j > 0 && x < mass[j - 1])
+		{
+			
+			mass[j] = mass[j - 1];
+			Prisvaivanya_massiv++;
+			j--;
+		}
+		mass[j] = x;
+		Prisvaivanya_massiv++;
+	}
+}
+/* Выводим массив */
+void printmassive(int* mass, int sizeMassiv)
+{
+	for (int i = 0; i < sizeMassiv; i++)
+		printf("%d  ",mass[i]);
+	printf("\n");
+}
+
+void listSort2(simple** begin, int sizeList)
+{
+	simple* head = (*begin);
+	simple* p;
+	simple* buff;
+	int x;
+	int j;
+	int k;
+	int d = 0;
+	for (int i = 1; i < sizeList; i++)
+	{
+		p = head;
+		x = (*begin)->next->meaning;
+		Prisvaivanya_list++;
+		j = i;
+		d = 0;
+
+		while (++Sravnenya_list && j > 0 && x > listMeaning(head, d))
+		{
+			j--;
+			d++;
+		}
+
+		k = d;  // d - место где он должен стоять ( с 0 )
+				/* Если элемент уже  на своем месте */
+		if (d == i)
+		{
+			*begin = (*begin)->next;
+			Prisvaivanya_list++;
+			continue;
+		}
+
+		while (d != 0 && --d)
+		{
+			p = p->next;        // р будет перед местом вставки
+			Prisvaivanya_list++;
+		}
+
+		if (k == 0)
+		{
+			buff = (*begin)->next;
+			(*begin)->next = buff->next;
+			buff->next = p;
+			head = buff;
+		}
+		else
+		{
+			buff = (*begin)->next;
+			(*begin)->next = buff->next;
+			buff->next = p->next;
+			p->next = buff;
+		}
+
+		Prisvaivanya_list += 4;
+	}
+	(*begin) = head;
+	Prisvaivanya_list++;
+}
+void listSort(simple** begin,int sizeList)
+{
+	simple* head = (*begin);
+	simple* p;
+	simple* buff;
+	int x;
+	int j;
+	int k;
+	for (int i = 1; i < sizeList; i++)
+	{
+		p = head;
+		x = (*begin)->next->meaning; 
+		Prisvaivanya_list++;
+		j = i;
+		
+
+		while (++Sravnenya_list && j > 0 && x < listMeaning(head, j - 1))
+		{
+			j--;
+		}
+
+		k = j;
+		if (j == i)
+		{
+			*begin = (*begin)->next;
+			Prisvaivanya_list++;
+			continue;
+		}
+
+		while (j != 0 && --j)
+		{
+			p = p->next;        // р будет перед местом вставки
+			Prisvaivanya_list++;
+		}
+
+		if (k == 0)
+		{
+			buff = (*begin)->next;
+			(*begin)->next = buff->next;
+			buff->next = p;
+			head = buff;
+		}
+		else
+		{
+			buff = (*begin)->next;
+			(*begin)->next = buff->next;
+			buff->next = p->next;
+			p->next = buff;
+		}
+		
+		Prisvaivanya_list += 4;
+	}
+	(*begin) = head;
+	Prisvaivanya_list++;
+}
+void listSort3(simple** begin, int sizeList)
+{
+	simple* head = (*begin);
+	simple* p;
+	simple* buff;
+	simple* p1;
+	int x;
+	int j;
+	int k;
+	int d = 0;
+	for (int i = 1; i < sizeList; i++)
+	{
+		p = head;
+		p1 = head;
+		x = (*begin)->next->meaning;
+		Prisvaivanya_list++;
+		j = i;
+		d = 0;
+
+		while (++Sravnenya_list && j > 0 && x > p1->meaning)
+		{
+			j--;
+			d++;
+			p1 = p1->next;
+		}
+
+		k = d;  // d - место где он должен стоять ( с 0 )
+		/* Если элемент уже  на своем месте */
+		if (d == i)
+		{
+			*begin = (*begin)->next;
+			Prisvaivanya_list++;
+			continue;
+		}
+
+		while (d != 0 && --d)
+		{
+			p = p->next;        // р будет перед местом вставки
+			Prisvaivanya_list++;
+		}
+
+		if (k == 0)
+		{
+			buff = (*begin)->next;
+			(*begin)->next = buff->next;
+			buff->next = p;
+			head = buff;
+		}
+		else
+		{
+			buff = (*begin)->next;
+			(*begin)->next = buff->next;
+			buff->next = p->next;
+			p->next = buff;
+		}
+
+		Prisvaivanya_list += 4;
+	}
+	(*begin) = head;
+	Prisvaivanya_list++;
+}
+int main()
+{
+	setlocale(LC_ALL, "RUSSIAN");
+	srand(time(NULL));
+
+	simple* list;
+	int* mass;
+	int MODE = 1;
+	int t;
+	/* MODE ОТВЕЧАЕТ ЗА НАЧАЛЬНУЮ ОТСОРТИРОВАННОСТЬ 
+	 
+			MODE = 1 - ПОЛНОСТЬЮ РАНДОМНЫЕ ЗНАЧЕНИЯ;
+			MODE = 2 - ХРАНИМЫЕ ЗНАЧЕНИЯ  УЖЕ ПОЛНОСТЬЮ ОТСОРТИРОВАННЫ;
+			MODE = 3 - ХРАНИМЫЕ ЗНАЧЕНИЯ ОТСОРТИРОВАННЫ, НО В ОБРАТНОМ ПОРЯДКЕ; 
+
+	*/
+
+
+	/* Инициализируем массив и линейный список */
+	initStructAndMassiv(&list, OURSIZE,&mass,MODE);
+
+	
+	//printmassive(mass, OURSIZE);
+	t = clock();
+	massivSort(mass, OURSIZE);
+	printf("Время сортировки массива %f\n", (double)(clock() - t) / 1000);
+	//printStruct(list);
+	t = clock();
+	listSort3(&list, OURSIZE);
+	printf("Время сортировки списка %f\n", (double)(clock() - t) / 1000);
+	//printStruct(list);
+
+
+	printf("Sravnenya_massiv -%d\n",Sravnenya_massiv);
+	printf("Prisvaivanya_massiv-%d\n",Prisvaivanya_massiv);
+	printf("Sravnenya_list-%d\n",Sravnenya_list);
+	printf("Prisvaivanya_list-%d\n",Prisvaivanya_list);
+	return 0;
+}

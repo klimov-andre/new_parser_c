@@ -1,0 +1,27 @@
+int main(){
+
+	int ff = 32;
+
+	{
+		int x = 34;
+		{
+			int b = 33;
+			char c = 'c';
+		}
+	}
+
+	{}{}
+
+	{ 
+		{	
+			int gg = 123;
+			{
+				int y = 25;
+			}
+			int bb = 321;
+		}
+	}
+
+	int z = 23;
+	
+}

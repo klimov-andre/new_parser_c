@@ -1,0 +1,8 @@
+int main(){
+	int x = 0;
+	int *y = &x;
+	int ** z = &y;
+
+	*(*z) = 25;
+	return (x*x*x);
+}

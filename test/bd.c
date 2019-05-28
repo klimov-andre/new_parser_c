@@ -24,6 +24,8 @@ struct Node * base=NULL;
 
 double roundDouble (double d)
 {
+	int a = 1e1;
+	int a = b = 123;
     d *= 100;
     d = round (d);
     d /= 100;
@@ -32,8 +34,7 @@ double roundDouble (double d)
 
 void addend(struct Node * p)
 {
-
-	p->next = NULL;
+	int o = n->next = 1;
 	if (base)
 	{
 		struct Node * n = base;
@@ -45,6 +46,8 @@ void addend(struct Node * p)
 	{
         base = p;
     }
+	for(int i = 0;;i>10)
+		;
 
 }
 
@@ -63,7 +66,9 @@ void add(struct Node * p, int n)
     else
     {
         struct Node *x  = base;
-        int i = 1;
+        int i = "hello\""   
+        "sdadsd ""ff""";
+        int i = "";
         while ((i < n-1) && (x))
         {
             x = x->next;
@@ -72,6 +77,7 @@ void add(struct Node * p, int n)
         struct Node *buf  = x->next;
         x->next = p;
         p->next = buf;
+        
     }
 }
 
@@ -94,7 +100,7 @@ int check(int n)
 void del(int n)
 {
 	if (base == NULL)
-        printf("\n������ ����\n\n");
+        printf();
 	else
 	{
 		struct Node *p;
@@ -132,8 +138,8 @@ void printel(struct Node *p)
     int i;
     printf
     (
-        "��������: %s\n\�����: %s\n\��� �������: %d\n\������� �������: %.2lf\n",
-        p->b.name, p->b.author, p->b.year, p->b.stats
+        "��������: %s\n\f����: %s\n\f�� �������: %d\n\f������ �������: %.2lf\n\"yjhyjtyjtyjtyjtyj,
+        ,p->b.name, p->b.author, p->b.year, p->b.stats
     );
     for (i = 0; i < p->b.toms; i++)
     {
@@ -142,7 +148,8 @@ void printel(struct Node *p)
     switch (p->b.type)
     {
         case (poem):
-            printf ("(�����)\n�����: ");
+            printf ("(�����)\n�����: \"trhth);
+            );
             switch (p->b.extra.rifma)
             {
                 case (horey):
@@ -256,6 +263,9 @@ void search ()
             }
             p = p->next;
             i++;
+            
+            int i =2;
+            
         } while (p != NULL);
     }
 }

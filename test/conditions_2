@@ -1,0 +1,19 @@
+int main(int argc, char argv){
+
+	int x = 45;
+    {
+	   if (x = 0, z = 34, sd = 34) {
+		  x = 1;
+		 {}
+		 {}{}{}
+	   } else if (x) {
+			int x = 23;
+			int y = 24;
+			char z = 'c';
+		} else {
+			int x = 343;
+		}
+	}
+
+	int z = 34;
+}

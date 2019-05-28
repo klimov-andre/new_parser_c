@@ -1,0 +1,14 @@
+int main(){
+	
+	int x = 34;
+	char *y = 0x414141;
+
+	y = (char*)x;
+
+	char *** z = NULL;
+
+	z = (char*)(*(&(*(&x))));
+	int k = (*(*(*z)));
+
+
+}

@@ -1,0 +1,10 @@
+int main(){
+	
+	int a[3][2][1] = { 0 };
+	char** zz = (char **)a[2][1][0];
+	char** yy = (char **)&a[2][1][0];
+	char** xx = (char**)(int*)a[2][1][0];
+	char** qq = ((char*)((int**)&a[2][1]))[0];
+	char** ww = (char**)(((char*)((int**)&a[2][1]))[0]);
+
+}

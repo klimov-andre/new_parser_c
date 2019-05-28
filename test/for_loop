@@ -1,0 +1,27 @@
+
+int main(){
+
+   int a;
+	
+   for( a = 10; a < 20; a = a + 1 ){
+      int b = sizeof(a);
+   }
+ 
+	for( int i = 0; ; i--) {
+		i++;
+	}
+	
+	for (;;){ return 0; }
+
+	for(;;)
+		a = a - a;	
+	int i = 0, b = 0;
+	for (int i = 0, b = 0;
+	 i < 0;
+	  i++, b++) {
+		return 0;
+
+	}
+
+   return 0;
+}

@@ -1,0 +1,8 @@
+int main(){
+	
+	const int b = 34;
+	const void* volatile a 
+	= (const void * volatile)&b;
+	void** const** volatile ** ddd = NULL;
+
+}

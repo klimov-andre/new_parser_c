@@ -1,0 +1,21 @@
+//int *a = (*(*foo[5])(char*))[4][5];
+int main(){
+	
+	int *x = 0;
+	int ** y = &x;
+
+	
+	char c = 'C';
+	char ******p = &c;
+	char** aa[12][30];
+
+	char* dd = (char*)x;
+
+	int a[3][2][1] = { 0 };
+
+	char** zz = (char **)a[2][1][0];
+
+
+}
+
+int mas[3][4][5][6] = { {1},{1},{1},{1}};

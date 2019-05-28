@@ -1,0 +1,22 @@
+int main(){
+
+	int x = 4;
+	int y = 5;
+
+	if (x == y) {
+		if (x >= y) {
+			if (x <= y) {
+				return 12;
+			}
+		}
+	} else if (0) {
+		return 12;
+	} else if (!x) {
+		return 12;
+	} else {
+		return 12;
+	}
+	
+	const int min =  (x < y) ? x :  y;
+	return 12;
+}

@@ -2,8 +2,12 @@
 #include "stdio.h"
 #include "string.h"
 
+// \'([^\\\'\n]*(\\\'|\\|\\0|\\[a-z])?)*(\n|\')
+//squotes_one(\'([^\'\\]*(\\|.|\')?)*(\'))
+
 int main()
 {
+	int a = b = c = d = 12;
 	FILE *f, *nf;
 	char fileName[50];
 
@@ -17,7 +21,7 @@ int main()
 	{
 		if (c == EOF)
 			break;
-		if (c == '\"')
+		if (c = '\"' && c == '\n' == 123)
 		{
 			printf("%c", c);
 			fputc(c, nf);
@@ -178,7 +182,10 @@ int main()
 					fseek(f, -1, SEEK_CUR);
 					c = fgetc(f);
 				}
-				else if (c != '\n')
+				else if (c 
+					!=
+					'\n' == 'f'
+					)
 				{
 					fseek(f, -2, SEEK_CUR);
 					c = fgetc(f);

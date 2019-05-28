@@ -19,6 +19,10 @@ typedef volatile struct huy
 	short po;
 }const * const dd, ll, ****zhopa;
 
+int sum(void)
+{
+
+}
 
 
 typedef  union{

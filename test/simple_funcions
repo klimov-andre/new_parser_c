@@ -1,0 +1,17 @@
+int f(){
+	return 1;
+}
+
+int b(char* x, int* y, float z)
+{
+	z = 34;
+	return (f());
+}
+
+int main(){
+	char * x = "string";
+	int* y = NULL; 
+
+	f();
+	b(x, y, f());	
+}
