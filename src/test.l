@@ -61,7 +61,9 @@ string ({dquotes}[\t\n\r ]*)*
 
 comment (\/{2,}(.*\\([\n\r]))+.*)|(\/{2,}(.*)([\n\r]))|(\/\*([^*]|\*+[^*/])*\*+\/)
 
-squotes (\'(\\.|.{0,5})\')
+squotes (\'(\\.|[^'])\')
+
+ssquotes (\'(\\.|.){0,5}\')
 
 Sign [+-] 
  
@@ -129,11 +131,11 @@ Expo [eE]{Sign}?{Num}+
 "--"				{return(DEC);}
 "->"				{return(PTR);}
 "&&"				{return(AND);}
-"||"				{return(OR);}
-"<="				{return(LE);}
-">="				{return(GE);}
-"=="				{return(EQ);}
-"!="				{return(NE);}
+"||"				{return(OR);}// очень плохая регулярка
+"<="				{return(LE);}// очень плохая регулярка
+">="				{return(GE);}// очень плохая регулярка
+"=="				{return(EQ);}// очень плохая регулярка
+"!="				{return(NE);}// очень плохая регулярка
 ";"					{return(';');}
 "{"					{return('{');}
 "}"					{return('}');}
@@ -160,17 +162,18 @@ Expo [eE]{Sign}?{Num}+
 "|"					{return('|');}
 "?"					{return('?');}
 
-[_a-zA-Z][_a-zA-Z0-9]*			{yylval.str = strdup(yytext); return (get_type(strdup(yytext)));}
-[0-9]+							{return (INTEGER);}
-[0-9]+([.][0-9]*)?|[.][0-9]+	{return (FLOATING);}// очень плохая регулярка
-[0-9]*[eE][+-]?[0-9]+			{return (FLOATING);}
+[$_a-zA-Z][_a-zA-Z0-9]*							{yylval.str = strdup(yytext); return (get_type(strdup(yytext)));}
+
+[0-9]+("U"|"L"|"LL"|"ULL"|"LU"|"UL"|"LLU"|"LUL"|"u"|"l"|"ll"|"ull"|"lu"|"ul"|"llu"|"lul")?				{return(INTEGER);}
+0[bB][01]+("U"|"L"|"LL"|"ULL"|"LU"|"UL"|"LLU"|"LUL"|"u"|"l"|"ll"|"ull"|"lu"|"ul"|"llu"|"lul")?			{return(INTEGER);}
+0[xX][0-9a-fA-F]+("U"|"L"|"LL"|"ULL"|"LU"|"UL"|"LLU"|"LUL"|"u"|"l"|"ll"|"ull"|"lu"|"ul"|"llu"|"lul")?	{return(INTEGER);}
+
+[0-9]+([.][0-9]*)?|[.][0-9]+("F"|"f")?			{return (FLOATING);}
+[0-9]*[eE][+-]?[0-9]+("F"|"f")?					{return (FLOATING);}
 
  
-({Num}*\.{Num}+)({Expo})? 		{return (FLOATING);}
-({Num}+\.{Num}*)({Expo})? 		{return (FLOATING);}
-
-0[bB][01]+						{return(INTEGER);}
-0[xX][0-9a-fA-F]+				{return(INTEGER);}
+({Num}*\.{Num}+)({Expo})?("L"|"l"|"f"|"F")? 	{return (FLOATING);}
+({Num}+\.{Num}*)({Expo})?("L"|"l"|"f"|"F")? 	{return (FLOATING);}
 
 [\n\r]			;
 [ \t]+			;

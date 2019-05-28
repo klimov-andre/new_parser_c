@@ -614,6 +614,7 @@ union_fields:
 enumeration:
 	ENUM NAME
 	| ENUM NAME '{' enum_fields '}'
+	| ENUM '{' enum_fields '}'
 	;
 
 /* нужны махинации с enum_identifier чтобы не было shift/reduce */
@@ -638,6 +639,7 @@ statement:
 	| loop_statement
 	| jump_statement
 	| '{' statement_list '}'
+	| '{' '}'
 	;
 	
 // Набор операторов
@@ -652,9 +654,9 @@ label:
 	;
 	
 label_for_switch:
-	NAME ':' statement_for_switch
-	| CASE conditional_expression ':' statement_for_switch
-	| DEFAULT ':' statement_for_switch
+	NAME ':'
+	| CASE conditional_expression ':'
+	| DEFAULT ':'
 	;
 	
 statement_for_switch:
@@ -665,6 +667,7 @@ statement_for_switch:
 	| loop_statement
 	| jump_for_switch_statement
 	| '{' statement_for_switch_list '}'
+	| '{' '}'
 	;
 
 statement_for_switch_list:
@@ -680,6 +683,7 @@ statement_for_loop:
 	| loop_statement
 	| jump_for_loop_statement
 	| '{' statement_for_loop_list '}'
+	| '{' '}'
 	;
 	
 statement_for_loop_list:
@@ -688,9 +692,9 @@ statement_for_loop_list:
 	;
 	
 conditional_for_loop_statement:
-	IF '(' expression ')' statement_for_loop %prec IFHIGH
-	| IF '(' expression ')' statement_for_loop ELSE statement_for_loop
-	| SWITCH '(' expression ')' statement_for_switch_loop
+	IF '(' expressions ')' statement_for_loop %prec IFHIGH
+	| IF '(' expressions ')' statement_for_loop ELSE statement_for_loop
+	| SWITCH '(' expressions ')' statement_for_switch_loop
 	;
 
 statement_for_switch_loop:
@@ -701,6 +705,7 @@ statement_for_switch_loop:
 	| loop_statement
 	| jump_for_switch_loop_statement
 	| '{' statement_for_switch_loop_list '}'
+	| '{' '}'
 	;
 	
 jump_for_switch_loop_statement:
@@ -719,14 +724,14 @@ statement_for_switch_loop_list:
 // Выражения
 expression_statement:
 	';'
-	| expression ';'
+	| expressions ';'
 	;
 	
 // Условные операторы
 conditional_statement:
-	IF '(' expression ')' statement %prec IFHIGH
-	| IF '(' expression ')' statement ELSE statement
-	| SWITCH '(' expression ')' statement_for_switch
+	IF '(' expressions ')' statement %prec IFHIGH
+	| IF '(' expressions ')' statement ELSE statement
+	| SWITCH '(' expressions ')' statement_for_switch
 	;
 	
 // Переходы
@@ -749,18 +754,15 @@ jump_for_loop_statement:
 	
 // Циклы
 loop_statement:
-	WHILE '(' expression ')' statement_for_loop
-	| DO statement_for_loop WHILE '(' expression ')' ';'
+	WHILE '(' expressions ')' statement_for_loop
+	| DO statement_for_loop WHILE '(' expressions ')' ';'
 	| FOR '(' expression_for_loop ';' expression_for_loop ';' expression_for_loop ')' statement_for_loop
-/*	| FOR '(' expression_for_loop ';' expression ';' ')' statement_for_loop
-	| FOR '(' expression_for_loop ';' ';' expression ')' statement_for_loop
-	| FOR '('  ';' expression ';' expression ')' statement_for_loop*/
 	;
 	
 // Выражения для циклов
 expression_for_loop:
-	| predefinitor {technical_variables_clean_all();} definitor /* объявление переменной может быть прямо в скобочках */
-	| expression /* либо сразу выражение */
+	| predefinitor {technical_variables_clean_all();} definitors /* объявление переменной может быть прямо в скобочках */
+	| expressions /* либо сразу выражение */
 	;
 
 /* ----- Грамматика функций ----- */	
@@ -798,13 +800,18 @@ func_id:
 // Выражения могут быть перечислены в строчку через запятую
 expression:
 	conditional_expression
-	| expression ',' conditional_expression
+//	| expression ',' conditional_expression
+	;
+
+expressions:
+	expression
+	| expressions ',' expression
 	;
 
 // Тернарные выражения
 conditional_expression:
 	simple_expression
-	| simple_expression '?' expression ':' expression
+	| simple_expression '?' expressions ':' expression
 	;
 
 // Выражения с операторами (=, +, - и т.д.)
@@ -816,13 +823,20 @@ simple_expression:
 // Приведение типов (тоже может быть внутри выражений)
 cast:
 	prefix_expression
-	| '(' {set_specification(SpecificationTypeStorageDenied);} {technical_variables_clean_all();} caster {technical_variables_clean_all();} ')' {set_specification(SpecificationTypeGlobal);} cast /*
-	| '(' {set_specification(SpecificationTypeStorageDenied);} predefinitor pointer_id')' {set_specification(SpecificationTypeGlobal);} cast*/
+	| '(' {set_specification(SpecificationTypeStorageDenied);} {technical_variables_clean_all();} caster {technical_variables_clean_all();} ')' {set_specification(SpecificationTypeGlobal);} cast
+	;
+
+casts:
+	'(' {set_specification(SpecificationTypeStorageDenied);} {technical_variables_clean_all();} caster {technical_variables_clean_all();} ')' {set_specification(SpecificationTypeGlobal);}
+	| casts '(' {set_specification(SpecificationTypeStorageDenied);} {technical_variables_clean_all();} caster {technical_variables_clean_all();} ')' {set_specification(SpecificationTypeGlobal);}
 	;
 	
 caster:
 	predefinitor
-	| predefinitor pointer_id;
+	| predefinitor pointer_id
+	| predefinitor pointer_id type_qualifier
+	| predefinitor pointer_id type_qualifier pointer_id
+	;
 
 // Конечные члены выражения	
 primary_expression: 
@@ -835,7 +849,9 @@ primary_expression:
 prefix_expression:
 	postfix_expression
 	| INC prefix_expression
+	| INC casts prefix_expression
 	| DEC prefix_expression
+	| DEC casts prefix_expression
 	| unary_operator cast
 	;
 
@@ -859,14 +875,15 @@ postfix_expression:
 /* ----- Описание аргументов ----- */
 
 arguments:
-	predefinitor {technical_variables_clean_all();} definitor
-	| arguments ',' {technical_variables_clean_all();}  predefinitor {technical_variables_clean_all();} definitor
+	predefinitor {technical_variables_clean_all();} definitor_identificator
+//TODO	| predefinitor {technical_variables_clean_all();} STARS
+	| arguments ',' {technical_variables_clean_all();}  arguments {technical_variables_clean_all();}
 	| predefinitor {technical_variables_clean_all();}
 	;
 	
 arguments_without_type:
-	simple_expression
-	| arguments_without_type ',' simple_expression
+	expression
+	| arguments_without_type ',' expression
 	;
 	
 /* ----- Всякие разные операторы ----- */
@@ -895,8 +912,8 @@ assignment_operator:
 	;
 	
 unary_operator:
-	'&'
-	| '*'
+	pointer_id
+	| '&'
 	| '+'
 	| '-'
 	| '~'
@@ -906,7 +923,7 @@ unary_operator:
 calc_operator:
 	'+'
 	| '-'
-	| '*'
+	| pointer_id
 	| '/'
 	| '%'
 	;
@@ -953,5 +970,4 @@ int main(int argc, char *argv[])
 	fclose(yyin);
 	return 0;
 }
-
 
