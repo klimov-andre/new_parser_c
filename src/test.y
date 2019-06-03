@@ -90,11 +90,11 @@
 	
 	void set_specification(SpecificationType specification_type)
 	{
-		//printf("	%d specification: %d %d %d\n", yylineno, technical_variables.prev_storage, technical_variables.specification_type, specification_type);
+		
 		if(specification_type == SpecificationTypePrev)
 		{
-			//SpecificationType tmp=technical_variables.prev_storage;
-			//technical_variables.prev_storage = technical_variables.specification_type;
+			
+			
 			technical_variables.specification_type = technical_variables.prev_storage;
 			return;
 		}
@@ -110,16 +110,16 @@
 		technical_variables.type_storage = TypeStorageNone;
 	}
 	
-	//#define DGB_PRINT printf("%s %d\n", __FUNCTION__, __LINE__);
+	
 	#define DGB_PRINT
-	// сначала может быть объявлен доп тип, потом базовый. чекнуть
+	
 	void set_type_basic(TypeBasic new_type_basic)
 	{
 		if(technical_variables.type_basic != TypeBasicNone )
 		{
 			
 			yyerror("More than one type specified");
-			//YYACCEPT;
+			
 			return;
 		}
 		
@@ -129,7 +129,7 @@
 		{
 			
 			yyerror("More than one type specified");
-			//YYACCEPT;
+			
 			return;
 		}
 		
@@ -149,7 +149,7 @@
 				{
 					
 					yyerror("More than one type specified");
-					//YYACCEPT;
+					
 					return;
 				}
 				
@@ -165,7 +165,7 @@
 				{
 					
 					yyerror("More than one type specified");
-					//YYACCEPT;
+					
 					return;
 				}
 				
@@ -182,7 +182,7 @@
 				{
 					
 					yyerror("More than one type specified");
-					//YYACCEPT;
+					
 					return;
 				}
 				
@@ -199,7 +199,7 @@
 		{
 			
 			yyerror("Incorrect combination of specificators");
-			//YYACCEPT;
+			
 			return;
 		}
 		else if(technical_variables.type_basic != TypeBasicInt && 
@@ -210,7 +210,7 @@
 			
 			printf("%d\n", TypeBasicNone);
 			yyerror("Incorrect combination of specificators");
-			//YYACCEPT;
+			
 			return;
 		}
 		
@@ -226,7 +226,7 @@
 				{
 					
 					yyerror("Incorrect combination of specificators");
-					//YYACCEPT;
+					
 					return;
 				}
 				technical_variables.type_additional = new_type_additional;
@@ -240,7 +240,7 @@
 				{
 					
 					yyerror("Incorrect combination of specificators");
-					//YYACCEPT;
+					
 					return;
 				}
 				technical_variables.type_additional = new_type_additional;
@@ -265,7 +265,7 @@
 		{
 			
 			yyerror("Incorrect combination of specificators");
-			//YYACCEPT;
+			
 			return;
 		}
 		
@@ -275,7 +275,7 @@
 		{
 		
 			yyerror("Incorrect combination of specificators");
-			//YYACCEPT;
+			
 			return;
 		}
 		else
@@ -293,7 +293,7 @@
 		{
 			
 			yyerror("More than one storage class specified");
-			//YYACCEPT;
+			
 			return;
 		}
 		switch(specification_type)
@@ -303,7 +303,7 @@
 				{
 					
 					yyerror("Incorrect storage class specified");
-					//YYACCEPT;
+					
 					return;
 				}
 				technical_variables.type_storage = new_type_storage;
@@ -316,7 +316,7 @@
 				{
 					
 					yyerror("Incorrect storage class specified");
-					//YYACCEPT;
+					
 					return;
 				}
 				technical_variables.type_storage = new_type_storage;
@@ -326,7 +326,7 @@
 			case SpecificationTypeStorageDenied:
 				
 				yyerror("Storage class denied in this construction");
-				//YYACCEPT;
+				
 				return;
 			break;
 			
@@ -361,7 +361,6 @@
 %type<str> NAME typedef_newtype
 
 %start program
-%define parse.error verbose
 
 %union 
 {
@@ -389,7 +388,7 @@ definition:
 	| predefinitor definitors ';'
 	;
 
-// Должно работать еще и как 	typedef_oldtype TYPEDEF typedef_newtypes ';', но 32 конфликта - оч много, поэтому только так
+
 typedef:
 	TYPEDEF {set_specification(SpecificationTypeStorageDenied);}  typedef_oldtype typedef_newtypes ';' {set_specification(SpecificationTypeGlobal);}
 	;
@@ -398,12 +397,12 @@ typedef_oldtype:
 	predefinitor
 	;
 	
-//specifier:
-	//type_specifier
-	//| type_qualifier
-	//| specifier type_qualifier
-//	| specifier type_specifier
-	//;
+
+	
+	
+	
+
+	
 	
 typedef_newtypes:
 	typedef_newtype {addtype($1); /*printf("%s\n",$1);*/}
@@ -437,7 +436,7 @@ definitor:
 	definitor_identificator
 	| definitor_identificator '=' expression
 	| definitor_identificator '=' initializer_list
-//	| func_id '('{set_specification(SpecificationTypeArgument);} ')'{set_specification(SpecificationTypeNone);} ';' 
+
 	;
 /*
 func_prototype:
@@ -459,6 +458,7 @@ definitor_identificator:
 	array_or_id
 	| pointer_id type_qualifier definitor_identificator
 	| pointer_id array_or_id
+	| pointer_id
 	;
 
 /* Одна и более звездочек */
@@ -489,7 +489,6 @@ int_dimension:
 	| int_dimension '[' INTEGER ']'
 	;
 
-/*  не хватает строкового литерала */
 basic_unit:
 	NAME
 	| INTEGER
@@ -503,13 +502,12 @@ initializer_list:
 	;
 
 initializers:
-	basic_unit
-	| initializers ',' basic_unit
+	expression
+	| initializers ',' expression
 	| initializers ',' initializer_list
 	| initializer_list
 	;
 	
-/* с этим вопросы: глобально доступны только - 2, локально - 4, для функций толлько - 2 */
 storage_class_specifier:
 	EXTERN {set_type_storage(TypeStorageExtern);}
 	| STATIC {set_type_storage(TypeStorageStatic);}
@@ -517,14 +515,12 @@ storage_class_specifier:
 	| AUTO {set_type_storage(TypeStorageAuto);}
 	;
 
-/* спецификатор типа (стр 35) */
 type_specifier:
 	simple_type_specifier
 	| compound_type_specifier
 	| CUSTOM_TYPE {set_type_basic(TypeBasicCompound); }
 	;
 	
-/* стр 40 */
 simple_type_specifier:
 	VOID {set_type_basic(TypeBasicVoid);}
 	| arithmetic_type
@@ -554,7 +550,6 @@ signification:
 	| UNSIGNED {set_type_sign(TypeSignSigned);}
 	;
 
-/* стр 61*/
 type_qualifier:
 	CONST
 	| VOLATILE
@@ -569,7 +564,6 @@ compound_type_specifier:
 	;
 	
 
-/* стр 45*/
 structure:
 	STRUCT NAME
 	| STRUCT {technical_variables_clean_all();} '{' {set_specification(SpecificationTypeStorageDenied);} structure_fields '}' {set_specification(SpecificationTypeGlobal);}
@@ -599,7 +593,6 @@ field_ids:
 	;
 	
 
-/* стр 52*/
 union:
 	UNION NAME
 	| UNION {technical_variables_clean_all();} '{' {set_specification(SpecificationTypeStorageDenied);} union_fields '}' {set_specification(SpecificationTypeGlobal);}
@@ -610,7 +603,6 @@ union_fields:
 	structure_fields
 	;
 
-/* стр 57*/
 enumeration:
 	ENUM NAME
 	| ENUM NAME '{' enum_fields '}'
@@ -642,13 +634,13 @@ statement:
 	| '{' '}'
 	;
 	
-// Набор операторов
+
 statement_list:
 	statement {technical_variables_clean_all(); set_specification(SpecificationTypeNone);}
 	| statement_list {technical_variables_clean_all(); set_specification(SpecificationTypeNone);} statement  {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}
 	;
 
-// Метки
+
 label:
 	NAME ':' statement
 	;
@@ -721,20 +713,20 @@ statement_for_switch_loop_list:
 	| statement_for_switch_loop_list {technical_variables_clean_all(); set_specification(SpecificationTypeNone);} statement_for_switch_loop {technical_variables_clean_all();; set_specification(SpecificationTypeNone);}
 	;
 
-// Выражения
+
 expression_statement:
 	';'
 	| expressions ';'
 	;
 	
-// Условные операторы
+
 conditional_statement:
 	IF '(' expressions ')' statement %prec IFHIGH
 	| IF '(' expressions ')' statement ELSE statement
 	| SWITCH '(' expressions ')' statement_for_switch
 	;
 	
-// Переходы
+
 jump_statement:
 	GOTO NAME ';'
 	| RETURN ';'
@@ -752,14 +744,14 @@ jump_for_loop_statement:
 	| BREAK ';'
 	;
 	
-// Циклы
+
 loop_statement:
 	WHILE '(' expressions ')' statement_for_loop
 	| DO statement_for_loop WHILE '(' expressions ')' ';'
 	| FOR '(' expression_for_loop ';' expression_for_loop ';' expression_for_loop ')' statement_for_loop
 	;
 	
-// Выражения для циклов
+
 expression_for_loop:
 	| predefinitor {technical_variables_clean_all();} definitors /* объявление переменной может быть прямо в скобочках */
 	| expressions /* либо сразу выражение */
@@ -768,16 +760,16 @@ expression_for_loop:
 /* ----- Грамматика функций ----- */	
 
 function:
-/*	prefuction  '(' {set_specification(SpecificationTypeArgument);} arguments ')' {set_specification(SpecificationTypeNone);} '{' statement_list '}' {set_specification(SpecificationTypeGlobal);}
+/*	prefunction  '(' {set_specification(SpecificationTypeArgument);} arguments ')' {set_specification(SpecificationTypeNone);} '{' statement_list '}' {set_specification(SpecificationTypeGlobal);}
 	|*/ func_prototype '{' statement_list '}'{set_specification(SpecificationTypeGlobal);}
 	| func_prototype '{' '}'{set_specification(SpecificationTypeGlobal);}
 	| func_prototype ';'
 	;
 
 func_prototype:
-	prefuction '('{set_specification(SpecificationTypeArgument);} ')'{set_specification(SpecificationTypeNone);}
-	| prefuction  '(' {set_specification(SpecificationTypeArgument);} arguments ')' {set_specification(SpecificationTypeNone);} 
-	| prefuction  '(' {set_specification(SpecificationTypeArgument);} arguments_without_type ')' definitions {set_specification(SpecificationTypeNone);}	
+	prefunction '('{set_specification(SpecificationTypeArgument);} ')'{set_specification(SpecificationTypeNone);}
+	| prefunction  '(' {set_specification(SpecificationTypeArgument);} arguments ')' {set_specification(SpecificationTypeNone);} 
+	| prefunction  '(' {set_specification(SpecificationTypeArgument);} arguments_without_type ')' definitions {set_specification(SpecificationTypeNone);}	
 	;
 
 definitions:
@@ -785,22 +777,22 @@ definitions:
 	| definitions {technical_variables_clean_all();} definition {technical_variables_clean_all();}
 	;
 	
-//TODO ne sabit' {technical_variables_clean_all();}
-prefuction:
+
+prefunction:
 	predefinitor func_id {technical_variables_clean_all();}
 	;
 	
-// Грамматика имен функций
+
 func_id:
 	NAME
 	| pointer_id NAME;
 	
 /* ----- Грамматика выражений ----- */
 
-// Выражения могут быть перечислены в строчку через запятую
+
 expression:
 	conditional_expression
-//	| expression ',' conditional_expression
+
 	;
 
 expressions:
@@ -808,19 +800,19 @@ expressions:
 	| expressions ',' expression
 	;
 
-// Тернарные выражения
+
 conditional_expression:
 	simple_expression
 	| simple_expression '?' expressions ':' expression
 	;
 
-// Выражения с операторами (=, +, - и т.д.)
+
 simple_expression:
 	cast
 	| simple_expression operator cast
 	;
 	
-// Приведение типов (тоже может быть внутри выражений)
+
 cast:
 	prefix_expression
 	| '(' {set_specification(SpecificationTypeStorageDenied);} {technical_variables_clean_all();} caster {technical_variables_clean_all();} ')' {set_specification(SpecificationTypeGlobal);} cast
@@ -838,14 +830,14 @@ caster:
 	| predefinitor pointer_id type_qualifier pointer_id
 	;
 
-// Конечные члены выражения	
+
 primary_expression: 
 	basic_unit
-	| '(' expression ')'
+	| '(' expressions ')'
 	;
 	
-// Унарные выражения (чтоб можно было перед выражениями всякие штуки писать
-// типа ++, --, а еще приведение типов) Здесь же и sizeof
+
+
 prefix_expression:
 	postfix_expression
 	| INC prefix_expression
@@ -860,7 +852,7 @@ sizeof:
 	| SIZEOF '(' {set_specification(SpecificationTypeStorageDenied);} {technical_variables_clean_all();} caster {technical_variables_clean_all();} ')' {set_specification(SpecificationTypeGlobal);}
 	;
  
-// Те же унарные выражения, только уже после основных выражений
+
 postfix_expression:
 	primary_expression
 	| postfix_expression '[' expression ']'
@@ -876,7 +868,7 @@ postfix_expression:
 
 arguments:
 	predefinitor {technical_variables_clean_all();} definitor_identificator
-//TODO	| predefinitor {technical_variables_clean_all();} STARS
+
 	| arguments ',' {technical_variables_clean_all();}  arguments {technical_variables_clean_all();}
 	| predefinitor {technical_variables_clean_all();}
 	;
